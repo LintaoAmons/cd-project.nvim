@@ -18,7 +18,12 @@ local function find_project_dir()
 end
 
 local function cd_project()
-	vim.ui.select(config.get_projects(), {
+	local projects = config.get_projects()
+	local paths = {}
+	for _, value in ipairs(projects) do
+		table.insert(paths, value.path)
+	end
+	vim.ui.select(paths, {
 		prompt = "Select a directory",
 	}, function(dir)
 		if not dir then
@@ -31,11 +36,20 @@ end
 
 local function add_current_project()
 	local project_dir = find_project_dir()
+
+	if project_dir == "." then
+		project_dir = vim.cmd("pwd")
+	end
+
 	if not project_dir then
 		return logErr("Can't find project path of current file")
 	end
 
-	config.add_project(project_dir)
+	config.add_project({
+		path = project_dir,
+		name = "name place holder", -- TODO: allow user to edit the name of the project
+	})
+	vim.notify("Project added: \n" .. project_dir)
 end
 
 return {

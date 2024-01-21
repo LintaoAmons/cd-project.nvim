@@ -4,7 +4,7 @@
 
 ---@type CdProject.Config
 local default_config = {
-	projects_config_filepath = vim.fs.normalize(vim.fn.stdpath("config") .. "/cd-project.nvim"),
+	projects_config_filepath = vim.fs.normalize(vim.fn.stdpath("config") .. "/cd-project.nvim.json"),
 	project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
 }
 
@@ -33,7 +33,7 @@ local function write_json_file(tbl, path)
 end
 
 ---@param path string
----@return table
+---@return CdProject.Project[]
 local function read_or_init_json_file(path)
 	local file, _ = io.open(path, "r")
 	if not file then
@@ -47,14 +47,15 @@ local function read_or_init_json_file(path)
 	return vim.fn.json_decode(content) or {}
 end
 
+---@return CdProject.Project[]
 M.get_projects = function()
 	return read_or_init_json_file(M.config.projects_config_filepath)
 end
 
----@param path string
-M.add_project = function(path)
+---@param project CdProject.Project
+M.add_project = function(project)
 	local projects = read_or_init_json_file(M.config.projects_config_filepath)
-	table.insert(projects, path)
+	table.insert(projects, project)
 	write_json_file(projects, M.config.projects_config_filepath)
 end
 
