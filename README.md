@@ -1,6 +1,6 @@
 # cd-project.nvim
 
-I tried quite a lot Project management plugin,
+I tried quite a lot `Project Management` plugins.
 
 In the end,
 
