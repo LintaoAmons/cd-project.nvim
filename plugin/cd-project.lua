@@ -10,3 +10,7 @@ end
 vim.g.loaded_cd_project = 1
 
 require("cd-project").setup()
+local api = require("cd-project.api")
+
+vim.api.nvim_create_user_command("CdProject", api.cd_project, {})
+vim.api.nvim_create_user_command("CdProjectAdd", api.add_current_project, {})
