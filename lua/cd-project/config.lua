@@ -19,7 +19,7 @@ end
 
 ---@param tbl table
 ---@param path string
-local function write_json_file(tbl, path)
+local write_json_file = function(tbl, path)
 	local content = vim.fn.json_encode(tbl) -- Encoding table to JSON string
 
 	local file, err = io.open(path, "w")
@@ -33,8 +33,8 @@ local function write_json_file(tbl, path)
 end
 
 ---@param path string
----@return CdProject.Project[]
-local function read_or_init_json_file(path)
+---@return table
+local read_or_init_json_file = function(path)
 	local file, _ = io.open(path, "r")
 	if not file then
 		write_json_file({}, path)
@@ -52,10 +52,8 @@ M.get_projects = function()
 	return read_or_init_json_file(M.config.projects_config_filepath)
 end
 
----@param project CdProject.Project
-M.add_project = function(project)
-	local projects = read_or_init_json_file(M.config.projects_config_filepath)
-	table.insert(projects, project)
+---@param projects CdProject.Project[]
+M.write_projects = function(projects)
 	write_json_file(projects, M.config.projects_config_filepath)
 end
 

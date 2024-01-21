@@ -17,19 +17,25 @@ local function find_project_dir()
 	return vim.fs.dirname(found[1])
 end
 
-local function cd_project()
-	local projects = config.get_projects()
+---@param projects CdProject.Project[]
+---@return string[]
+local function get_project_paths(projects)
 	local paths = {}
 	for _, value in ipairs(projects) do
 		table.insert(paths, value.path)
 	end
-	vim.ui.select(paths, {
+	return paths
+end
+
+local function cd_project()
+	local projects = config.get_projects()
+	vim.ui.select(get_project_paths(projects), {
 		prompt = "Select a directory",
 	}, function(dir)
 		if not dir then
 			return logErr("Must select a valid dir")
 		end
-		vim.cmd("cd " .. dir)
+		vim.fn.execute("cd " .. dir)
 		vim.notify("switched to dir: " .. dir)
 	end)
 end
@@ -37,18 +43,26 @@ end
 local function add_current_project()
 	local project_dir = find_project_dir()
 
-	if project_dir == "." then
-		project_dir = vim.cmd("pwd")
+	if not project_dir or project_dir == "." or project_dir == "" or project_dir == " " then
+		project_dir = string.match(vim.fn.execute("pwd"), "^%s*(.-)%s*$")
 	end
 
-	if not project_dir then
+	if not project_dir or project_dir == "." or project_dir == "" or project_dir == " " then
 		return logErr("Can't find project path of current file")
 	end
 
-	config.add_project({
+	local projects = config.get_projects()
+
+	if vim.tbl_contains(get_project_paths(projects), project_dir) then
+		return vim.notify("Project already exists: " .. project_dir)
+	end
+
+	local new_project = {
 		path = project_dir,
 		name = "name place holder", -- TODO: allow user to edit the name of the project
-	})
+	}
+	table.insert(projects, new_project)
+	config.write_projects(projects)
 	vim.notify("Project added: \n" .. project_dir)
 end
 
