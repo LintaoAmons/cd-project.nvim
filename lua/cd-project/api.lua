@@ -4,7 +4,7 @@ local function logErr(msg)
 end
 
 ---@return string|nil
-local function find_project_dir()
+function find_project_dir()
 	local found = vim.fs.find(
 		config.config.project_dir_pattern,
 		{ upward = true, stop = vim.loop.os_homedir(), path = vim.fs.dirname(vim.fn.expand("%:p")) }
@@ -14,12 +14,22 @@ local function find_project_dir()
 		return vim.loop.os_homedir()
 	end
 
-	return vim.fs.dirname(found[1])
+	local project_dir = vim.fs.dirname(found[1])
+
+	if not project_dir or project_dir == "." or project_dir == "" or project_dir == " " then
+		project_dir = string.match(vim.fn.execute("pwd"), "^%s*(.-)%s*$")
+	end
+
+	if not project_dir or project_dir == "." or project_dir == "" or project_dir == " " then
+		return nil
+	end
+
+	return project_dir
 end
 
----@param projects CdProject.Project[]
 ---@return string[]
-local function get_project_paths(projects)
+local function get_project_paths()
+	local projects = config.get_projects()
 	local paths = {}
 	for _, value in ipairs(projects) do
 		table.insert(paths, value.path)
@@ -27,33 +37,23 @@ local function get_project_paths(projects)
 	return paths
 end
 
-local function cd_project()
-	local projects = config.get_projects()
-	vim.ui.select(get_project_paths(projects), {
-		prompt = "Select a directory",
-	}, function(dir)
-		if not dir then
-			return logErr("Must select a valid dir")
-		end
-		vim.fn.execute("cd " .. dir)
-		vim.notify("switched to dir: " .. dir)
-	end)
+---@param dir string
+local function cd_project(dir)
+	vim.g.cd_project_last_project = vim.g.cd_project_current_project
+	vim.g.cd_project_current_project = dir
+	vim.fn.execute("cd " .. dir)
 end
 
 local function add_current_project()
 	local project_dir = find_project_dir()
 
-	if not project_dir or project_dir == "." or project_dir == "" or project_dir == " " then
-		project_dir = string.match(vim.fn.execute("pwd"), "^%s*(.-)%s*$")
-	end
-
-	if not project_dir or project_dir == "." or project_dir == "" or project_dir == " " then
+	if not project_dir then
 		return logErr("Can't find project path of current file")
 	end
 
 	local projects = config.get_projects()
 
-	if vim.tbl_contains(get_project_paths(projects), project_dir) then
+	if vim.tbl_contains(get_project_paths(), project_dir) then
 		return vim.notify("Project already exists: " .. project_dir)
 	end
 
@@ -66,7 +66,18 @@ local function add_current_project()
 	vim.notify("Project added: \n" .. project_dir)
 end
 
+local function back()
+	local last_project = vim.g.cd_project_last_project
+	if not last_project then
+		vim.notify("Can't find last project. Haven't switch project yet.")
+	end
+	cd_project(last_project)
+end
+
 return {
 	cd_project = cd_project,
 	add_current_project = add_current_project,
+	get_project_paths = get_project_paths,
+	back = back,
+	find_project_dir = find_project_dir,
 }
