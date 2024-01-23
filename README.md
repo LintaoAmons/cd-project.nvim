@@ -31,8 +31,8 @@ return {
 ```
 
 
-## FIND MORE UESR FRIENDLY PLUGIN MADE BY ME
+## FIND MORE UESR FRIENDLY PLUGINS MADE BY ME
 
 - [scratch.nvim](https://github.com/LintaoAmons/scratch.nvim)
-- [easy-commands](https://github.com/LintaoAmons/easy-commands.nvim)
-- [cd-project](https://github.com/LintaoAmons/cd-project.nvim)
+- [easy-commands.nvim](https://github.com/LintaoAmons/easy-commands.nvim)
+- [cd-project.nvim](https://github.com/LintaoAmons/cd-project.nvim)
