@@ -19,16 +19,37 @@ This plugin did nothing but provided a simplier way to add and switch to directo
 -- using lazy.nvim
 return {
     "LintaoAmons/cd-project.nvim",
+    -- Don't need call the setup function if you think you are good with the default configuration
     config = function()
       require("cd-project").setup({
+        -- this json file is acting like a database to update and read the projects in real time.
+        -- So because it's just a json file, you can edit directly to add more paths you want manually
         projects_config_filepath = vim.fs.normalize(
           vim.fn.stdpath("config") .. "/cd-project.nvim.json"
         ),
+        -- this controls the behaviour of `CdProjectAdd` command about how to get the project directory
         project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
       })
     end,
   }
 ```
+
+## Commands and Apis
+
+| Command         | Description                                                 |
+|-----------------|-------------------------------------------------------------|
+| `CdProject`     | change working directory                                    |
+| `CdProjectAdd`  | add current project's directory to the database(json file)  |
+| `CdProjectBack` | quickly switch between current project and previous project |
+
+
+You can call the Apis provided by the plugin, to integrate into your own work flow
+
+```lua
+require("cd-project.api").some_method()
+```
+
+you can find the exported Apis at [./lua/cd-project/api.lua](./lua/cd-project/api.lua)
 
 
 ## FIND MORE UESR FRIENDLY PLUGINS MADE BY ME
