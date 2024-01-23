@@ -51,6 +51,11 @@ require("cd-project.api").some_method()
 
 you can find the exported Apis at [./lua/cd-project/api.lua](./lua/cd-project/api.lua)
 
+## Contribution
+
+I provide a [video](https://youtu.be/V6B6uMCmMTg) to explain how this plugin is structured
+
+it should be helpful if you want to understand the plugin and contribute.
 
 ## FIND MORE UESR FRIENDLY PLUGINS MADE BY ME
 
