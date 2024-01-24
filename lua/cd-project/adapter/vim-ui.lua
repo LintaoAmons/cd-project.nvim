@@ -4,14 +4,16 @@ local function logErr(msg)
 end
 
 -- TODO: how to make this level purely to get user input and pass to the api functions
-local function cd_project()
-	vim.ui.select(api.get_project_paths(), {
+--
+---@param config CdProject.Config
+local function cd_project(config)
+	vim.ui.select(api.get_project_paths(config.projects_config_filepath), {
 		prompt = "Select a directory",
 	}, function(dir)
 		if not dir then
 			return logErr("Must select a valid dir")
 		end
-		api.cd_project(dir)
+		api.cd_project(config.hooks, dir)
 	end)
 end
 
