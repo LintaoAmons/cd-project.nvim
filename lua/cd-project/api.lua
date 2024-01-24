@@ -42,6 +42,11 @@ local function cd_project(dir)
 	vim.g.cd_project_last_project = vim.g.cd_project_current_project
 	vim.g.cd_project_current_project = dir
 	vim.fn.execute("cd " .. dir)
+
+	local hooks = config.get_hooks(dir, "AFTER_CD")
+	for _, hook in ipairs(hooks) do
+		hook(dir)
+	end
 end
 
 local function add_current_project()

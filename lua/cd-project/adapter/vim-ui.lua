@@ -12,7 +12,6 @@ local function cd_project()
 			return logErr("Must select a valid dir")
 		end
 		api.cd_project(dir)
-		vim.notify("switched to dir: " .. dir)
 	end)
 end
 
