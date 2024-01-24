@@ -1,7 +1,5 @@
+local utils = require("cd-project.utils")
 local api = require("cd-project.api")
-local function logErr(msg)
-	vim.notify(msg, vim.log.levels.ERROR, { title = "cd-project.nvim" })
-end
 
 -- TODO: how to make this level purely to get user input and pass to the api functions
 --
@@ -11,7 +9,7 @@ local function cd_project(config)
 		prompt = "Select a directory",
 	}, function(dir)
 		if not dir then
-			return logErr("Must select a valid dir")
+			return utils.log_error("Must select a valid dir")
 		end
 		api.cd_project(config.hooks, dir)
 	end)

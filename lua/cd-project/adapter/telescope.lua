@@ -1,8 +1,3 @@
-local pickers = require("telescope.pickers")
-local finders = require("telescope.finders")
-local conf = require("telescope.config").values
-local actions = require("telescope.actions")
-local action_state = require("telescope.actions.state")
 local project = require("cd-project.project")
 local api = require("cd-project.api")
 
@@ -11,6 +6,17 @@ local M = {}
 ---@param config CdProject.Config
 ---@param opts table
 M.cd_project = function(config, opts)
+	local utils = require("cd-project.utils")
+	local success, picker = pcall(require, "telescope.pickers")
+	if not success then
+		utils.log_error("telescope not installed")
+		return
+	end
+	local pickers = require("telescope.pickers")
+	local finders = require("telescope.finders")
+	local conf = require("telescope.config").values
+	local actions = require("telescope.actions")
+	local action_state = require("telescope.actions.state")
 	opts = opts or {}
 	pickers
 		.new(opts, {
