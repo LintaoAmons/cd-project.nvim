@@ -29,7 +29,7 @@ return {
         project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
         hooks = {
           {
-            callback = function(dir)
+            callback = function(dir) -- do whatever you like after `cd` to your project
               vim.notify("switched to dir: " .. dir)
             end,
           },
