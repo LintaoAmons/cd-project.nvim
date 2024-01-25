@@ -1,5 +1,4 @@
 local usercommands = require("cd-project.usercommands")
-local api = require("cd-project.api")
 
 ---@alias CdProject.Adapter "telescope"|"vim-ui"
 
@@ -38,15 +37,15 @@ local default_config = {
 	adapter = "telescope",
 }
 
-local M = {
-	config = default_config,
-}
+local M = {}
+
+---@type CdProject.Config
+CdProjectConfig = default_config
 
 ---@param user_config? CdProject.Config
 M.setup = function(user_config)
-	M.config = vim.tbl_deep_extend("force", default_config, user_config or {})
-	vim.g.cd_project_current_project = api.find_project_dir(M.config)
-	usercommands.setup(M.config)
+	CdProjectConfig = vim.tbl_deep_extend("force", default_config, user_config or {}) or default_config
+	usercommands.setup(CdProjectConfig)
 end
 
 return M
