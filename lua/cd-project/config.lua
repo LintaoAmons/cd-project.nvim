@@ -4,6 +4,7 @@
 ---@field projects_config_filepath string
 ---@field project_dir_pattern string[]
 ---@field projects_picker? CdProject.Adapter
+---@field show_project_names boolean
 ---@field hooks? CdProject.Hook[]
 
 ---@type CdProject.Config
@@ -14,7 +15,9 @@ local default_config = {
 	-- this controls the behaviour of `CdProjectAdd` command about how to get the project directory
 	project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
 	projects_picker = "vim-ui", -- optional, you can switch to `telescope`
-  -- do whatever you like by hooks
+	-- show_project_name: If true, selection will replace project paths with project names according to json.
+	show_project_names = false,
+	-- do whatever you like by hooks
 	hooks = {
 		{
 			callback = function(dir)

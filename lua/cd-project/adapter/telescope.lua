@@ -4,6 +4,7 @@ local api = require("cd-project.api")
 ---@param opts? table
 local cd_project = function(opts)
 	local utils = require("cd-project.utils")
+	local show_project_names = vim.g.cd_project_config.show_project_names
 	local success, picker = pcall(require, "telescope.pickers")
 	if not success then
 		utils.log_error("telescope not installed")
@@ -31,6 +32,13 @@ local cd_project = function(opts)
 				results = project.get_projects(),
 				---@param project_entry CdProject.Project
 				entry_maker = function(project_entry)
+					if show_project_names == true then
+						return {
+							value = project_entry,
+							display = project_entry.name,
+							ordinal = project_entry.path,
+						}
+					end
 					return {
 						value = project_entry,
 						display = project_entry.path,
