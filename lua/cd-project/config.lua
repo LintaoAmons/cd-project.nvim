@@ -3,8 +3,8 @@
 ---@class CdProject.Config
 ---@field projects_config_filepath string
 ---@field project_dir_pattern string[]
+---@field projects_picker? CdProject.Adapter
 ---@field hooks? CdProject.Hook[]
----@field project_peeker? CdProject.Adapter
 
 ---@type CdProject.Config
 local default_config = {
@@ -13,6 +13,8 @@ local default_config = {
 	projects_config_filepath = vim.fs.normalize(vim.fn.stdpath("config") .. "/cd-project.nvim.json"),
 	-- this controls the behaviour of `CdProjectAdd` command about how to get the project directory
 	project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
+	projects_picker = "vim-ui", -- optional, you can switch to `telescope`
+  -- do whatever you like by hooks
 	hooks = {
 		{
 			callback = function(dir)
@@ -25,14 +27,13 @@ local default_config = {
 			end, -- required, action when trigger the hook
 			name = "cd hint", -- optional
 			order = 1, -- optional, the exection order if there're multiple hooks to be trigger at one point
-			pattern = "cd-project.nvim", -- trigger hook if contains pattern, optional
-			trigger_point = "DISABLE", -- enum of trigger_points, optional, default to `AFTER_CD`
+			pattern = "cd-project.nvim", -- optional, trigger hook if contains pattern
+			trigger_point = "DISABLE", -- optional, enum of trigger_points, default to `AFTER_CD`
 			match_rule = function(dir) -- optional, a function return bool. if have this fields, then pattern will be ignored
 				return true
 			end,
 		},
 	},
-	projects_picker = "vim-ui", -- optional, you can switch to `telescope`
 }
 
 local M = {}

@@ -27,9 +27,10 @@ return {
         projects_config_filepath = vim.fs.normalize(vim.fn.stdpath("config") .. "/cd-project.nvim.json"),
         -- this controls the behaviour of `CdProjectAdd` command about how to get the project directory
         project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
+        -- do whatever you like by hooks
         hooks = {
           {
-            callback = function(dir) -- do whatever you like after `cd` to your project
+            callback = function(dir)
               vim.notify("switched to dir: " .. dir)
             end,
           },
@@ -38,14 +39,15 @@ return {
               vim.notify("switched to dir: " .. dir)
             end, -- required, action when trigger the hook
             name = "cd hint", -- optional
-            order = 1, -- optional, the execution order if there're multiple hooks to be trigger at one point
-            pattern = "cd-project.nvim", -- optional, trigger hook if contains pattern, optional
+            order = 1, -- optional, the exection order if there're multiple hooks to be trigger at one point
+            pattern = "cd-project.nvim", -- optional, trigger hook if contains pattern
             trigger_point = "DISABLE", -- optional, enum of trigger_points, default to `AFTER_CD`
             match_rule = function(dir) -- optional, a function return bool. if have this fields, then pattern will be ignored
               return true
             end,
           },
         },
+        projects_picker = "vim-ui", -- optional, you can switch to `telescope`
       })
     end,
   }
