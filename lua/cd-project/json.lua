@@ -1,5 +1,3 @@
-local M = {}
-
 ---@param tbl table
 ---@param path string
 local write_json_file = function(tbl, path)
@@ -14,11 +12,10 @@ local write_json_file = function(tbl, path)
 	file:write(content)
 	file:close()
 end
-M.write_json_file = write_json_file
 
 ---@param path string
 ---@return table
-M.read_or_init_json_file = function(path)
+local read_or_init_json_file = function(path)
 	local file, _ = io.open(path, "r")
 	if not file then
 		write_json_file({}, path)
@@ -31,4 +28,7 @@ M.read_or_init_json_file = function(path)
 	return vim.fn.json_decode(content) or {}
 end
 
-return M
+return {
+	write_json_file = write_json_file,
+	read_or_init_json_file = read_or_init_json_file,
+}

@@ -1,10 +1,8 @@
-local project = require("cd-project.project")
+local project = require("cd-project.project-repo")
 local api = require("cd-project.api")
 
-local M = {}
-
----@param opts table
-M.cd_project = function(opts)
+---@param opts? table
+local cd_project = function(opts)
 	local utils = require("cd-project.utils")
 	local success, picker = pcall(require, "telescope.pickers")
 	if not success then
@@ -24,20 +22,19 @@ M.cd_project = function(opts)
 					actions.close(prompt_bufnr)
 					---@type CdProject.Project
 					local selected_project = action_state.get_selected_entry().value
-					print("selected_project", vim.inspect(selected_project))
 					api.cd_project(selected_project.path)
 				end)
 				return true
 			end,
 			prompt_title = "cd to project",
 			finder = finders.new_table({
-				results = project.get_projects(CdProjectConfig.projects_config_filepath),
+				results = project.get_projects(),
 				---@param project_entry CdProject.Project
 				entry_maker = function(project_entry)
 					return {
 						value = project_entry,
-						display = project_entry.name,
-						ordinal = project_entry.name,
+						display = project_entry.path,
+						ordinal = project_entry.path,
 					}
 				end,
 			}),
@@ -46,4 +43,6 @@ M.cd_project = function(opts)
 		:find()
 end
 
-return M
+return {
+	cd_project = cd_project,
+}

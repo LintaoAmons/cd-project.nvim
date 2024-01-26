@@ -1,5 +1,3 @@
-local M = {}
-
 ---@class CdProject.Hook
 ---@field callback fun(param: string)
 ---@field name? string
@@ -12,7 +10,7 @@ local M = {}
 ---@param dir string
 ---@param point string
 ---@return function[]
-M.get_hooks = function(hooks, dir, point)
+local get_hooks = function(hooks, dir, point)
 	local matching_hooks = {}
 	for _, hook in ipairs(hooks) do
 		local matches = false
@@ -48,4 +46,6 @@ M.get_hooks = function(hooks, dir, point)
 	return callbacks
 end
 
-return M
+return {
+	get_hooks = get_hooks,
+}

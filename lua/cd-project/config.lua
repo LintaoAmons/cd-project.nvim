@@ -1,12 +1,10 @@
-local usercommands = require("cd-project.usercommands")
-
 ---@alias CdProject.Adapter "telescope"|"vim-ui"
 
 ---@class CdProject.Config
 ---@field projects_config_filepath string
 ---@field project_dir_pattern string[]
 ---@field hooks? CdProject.Hook[]
----@field adapter? CdProject.Adapter
+---@field project_peeker? CdProject.Adapter
 
 ---@type CdProject.Config
 local default_config = {
@@ -34,18 +32,18 @@ local default_config = {
 			end,
 		},
 	},
-	adapter = "telescope",
+	projects_picker = "vim-ui", -- optional, you can switch to `telescope`
 }
 
 local M = {}
 
 ---@type CdProject.Config
-CdProjectConfig = default_config
+vim.g.cd_project_config = default_config
 
 ---@param user_config? CdProject.Config
 M.setup = function(user_config)
-	CdProjectConfig = vim.tbl_deep_extend("force", default_config, user_config or {}) or default_config
-	usercommands.setup(CdProjectConfig)
+	local previous_config = vim.g.cd_project_config or default_config
+	vim.g.cd_project_config = vim.tbl_deep_extend("force", previous_config, user_config or {}) or default_config
 end
 
 return M

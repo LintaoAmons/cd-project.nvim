@@ -1,11 +1,11 @@
 local cd_hooks = require("cd-project.hooks")
-local project = require("cd-project.project")
+local project = require("cd-project.project-repo")
 local utils = require("cd-project.utils")
 
 ---@return string|nil
 local function find_project_dir()
 	local found = vim.fs.find(
-		CdProjectConfig.project_dir_pattern,
+		vim.g.cd_project_config.project_dir_pattern,
 		{ upward = true, stop = vim.loop.os_homedir(), path = vim.fs.dirname(vim.fn.expand("%:p")) }
 	)
 
@@ -28,7 +28,7 @@ end
 
 ---@return string[]
 local function get_project_paths()
-	local projects = project.get_projects(CdProjectConfig.projects_config_filepath)
+	local projects = project.get_projects()
 	local paths = {}
 	for _, value in ipairs(projects) do
 		table.insert(paths, value.path)
@@ -42,21 +42,21 @@ local function cd_project(dir)
 	vim.g.cd_project_current_project = dir
 	vim.fn.execute("cd " .. dir)
 
-	local hooks = cd_hooks.get_hooks(CdProjectConfig.hooks, dir, "AFTER_CD")
+	local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "AFTER_CD")
+	print("DEBUGPRINT[1]: api.lua:45: hooks=" .. vim.inspect(hooks))
 	for _, hook in ipairs(hooks) do
 		hook(dir)
 	end
 end
 
 local function add_current_project()
-	local current_config = CdProjectConfig
 	local project_dir = find_project_dir()
 
 	if not project_dir then
 		return utils.log_err("Can't find project path of current file")
 	end
 
-	local projects = project.get_projects(CdProjectConfig.projects_config_filepath)
+	local projects = project.get_projects()
 
 	if vim.tbl_contains(get_project_paths(), project_dir) then
 		return vim.notify("Project already exists: " .. project_dir)
@@ -67,7 +67,7 @@ local function add_current_project()
 		name = "name place holder", -- TODO: allow user to edit the name of the project
 	}
 	table.insert(projects, new_project)
-	project.write_projects(projects, current_config.projects_config_filepath)
+	project.write_projects(projects)
 	vim.notify("Project added: \n" .. project_dir)
 end
 
