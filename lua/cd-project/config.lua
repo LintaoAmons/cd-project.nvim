@@ -1,6 +1,10 @@
+---@alias CdProject.Adapter "telescope"|"vim-ui"
+
 ---@class CdProject.Config
 ---@field projects_config_filepath string
 ---@field project_dir_pattern string[]
+---@field hooks? CdProject.Hook[]
+---@field project_peeker? CdProject.Adapter
 
 ---@type CdProject.Config
 local default_config = {
@@ -28,95 +32,18 @@ local default_config = {
 			end,
 		},
 	},
+	projects_picker = "vim-ui", -- optional, you can switch to `telescope`
 }
 
-local M = {
-	config = default_config,
-}
+local M = {}
+
+---@type CdProject.Config
+vim.g.cd_project_config = default_config
 
 ---@param user_config? CdProject.Config
 M.setup = function(user_config)
-	M.config = vim.tbl_deep_extend("force", default_config, user_config or {})
-end
-
----@param tbl table
----@param path string
-local write_json_file = function(tbl, path)
-	local content = vim.fn.json_encode(tbl) -- Encoding table to JSON string
-
-	local file, err = io.open(path, "w")
-	if not file then
-		error("Could not open file: " .. err)
-		return nil
-	end
-
-	file:write(content)
-	file:close()
-end
-
----@param path string
----@return table
-local read_or_init_json_file = function(path)
-	local file, _ = io.open(path, "r")
-	if not file then
-		write_json_file({}, path)
-		return {}
-	end
-
-	local content = file:read("*a") -- Read the entire content
-	file:close()
-
-	return vim.fn.json_decode(content) or {}
-end
-
----@return CdProject.Project[]
-M.get_projects = function()
-	return read_or_init_json_file(M.config.projects_config_filepath)
-end
-
----@param projects CdProject.Project[]
-M.write_projects = function(projects)
-	write_json_file(projects, M.config.projects_config_filepath)
-end
-
----@param dir string
----@return function[]
-M.get_hooks = function(dir, point)
-	local hooks = M.config.hooks
-	local matching_hooks = {}
-
-	for _, hook in ipairs(hooks) do
-		local matches = false
-		local trigger_point = hook.trigger_point or "AFTER_CD"
-
-		-- Check if match_rule exists and returns true
-		if hook.match_rule == nil and hook.pattern == nil then
-			matches = true
-		elseif hook.match_rule and hook.match_rule(dir) and trigger_point == point then
-			matches = true
-		-- If no match_rule, check if pattern exists in dir
-		elseif hook.pattern and dir:find(hook.pattern) and trigger_point == point then
-			matches = true
-		end
-
-		-- Add hook to matching_hooks if it matches
-		if matches then
-			table.insert(matching_hooks, hook)
-		end
-	end
-
-	-- Sort hooks by order if order is defined
-	table.sort(matching_hooks, function(a, b)
-		return (a.order or 0) < (b.order or 0)
-	end)
-
-	-- Extract and return the callback functions from the matching hooks
-	local callbacks = {}
-	for _, hook in ipairs(matching_hooks) do
-		table.insert(callbacks, hook.callback)
-	end
-
-	return callbacks
+	local previous_config = vim.g.cd_project_config or default_config
+	vim.g.cd_project_config = vim.tbl_deep_extend("force", previous_config, user_config or {}) or default_config
 end
 
 return M

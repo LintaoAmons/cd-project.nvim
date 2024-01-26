@@ -1,4 +1,0 @@
----@class CdProject.Project
----@field path string
----@field name string
----@field desc string|nil
