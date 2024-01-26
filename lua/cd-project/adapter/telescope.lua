@@ -1,4 +1,4 @@
-local project = require("cd-project.project-repo")
+local repo = require("cd-project.project-repo")
 local api = require("cd-project.api")
 
 ---@param opts? table
@@ -16,6 +16,14 @@ local cd_project = function(opts)
 	local actions = require("telescope.actions")
 	local action_state = require("telescope.actions.state")
 	opts = opts or {}
+	local projects = repo.get_projects()
+	local maxLength = 0
+	for _, project in ipairs(projects) do
+		if #project.name > maxLength then
+			maxLength = #project.name
+		end
+	end
+
 	pickers
 		.new(opts, {
 			attach_mappings = function(prompt_bufnr, map)
@@ -29,20 +37,13 @@ local cd_project = function(opts)
 			end,
 			prompt_title = "cd to project",
 			finder = finders.new_table({
-				results = project.get_projects(),
-				---@param project_entry CdProject.Project
-				entry_maker = function(project_entry)
-					if show_project_names == true then
-						return {
-							value = project_entry,
-							display = project_entry.name,
-							ordinal = project_entry.path,
-						}
-					end
+				results = projects,
+				---@param project CdProject.Project
+				entry_maker = function(project)
 					return {
-						value = project_entry,
-						display = project_entry.path,
-						ordinal = project_entry.path,
+						value = project,
+						display = string.format("%-" .. maxLength .. "s", project.name) .. "  |  " .. project.path,
+						ordinal = project.path,
 					}
 				end,
 			}),

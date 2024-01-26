@@ -27,6 +27,7 @@ return {
         projects_config_filepath = vim.fs.normalize(vim.fn.stdpath("config") .. "/cd-project.nvim.json"),
         -- this controls the behaviour of `CdProjectAdd` command about how to get the project directory
         project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
+        projects_picker = "vim-ui", -- optional, you can switch to `telescope`
         -- do whatever you like by hooks
         hooks = {
           {
@@ -47,7 +48,6 @@ return {
             end,
           },
         },
-        projects_picker = "vim-ui", -- optional, you can switch to `telescope`
       })
     end,
   }
