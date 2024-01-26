@@ -43,7 +43,6 @@ local function cd_project(dir)
 	vim.fn.execute("cd " .. dir)
 
 	local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "AFTER_CD")
-	print("DEBUGPRINT[1]: api.lua:45: hooks=" .. vim.inspect(hooks))
 	for _, hook in ipairs(hooks) do
 		hook(dir)
 	end
