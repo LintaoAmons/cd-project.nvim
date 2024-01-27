@@ -4,8 +4,7 @@ local api = require("cd-project.api")
 ---@param opts? table
 local cd_project = function(opts)
 	local utils = require("cd-project.utils")
-	local show_project_names = vim.g.cd_project_config.show_project_names
-	local success, picker = pcall(require, "telescope.pickers")
+	local success, _ = pcall(require, "telescope.pickers")
 	if not success then
 		utils.log_error("telescope not installed")
 		return
