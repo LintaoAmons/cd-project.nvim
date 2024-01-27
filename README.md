@@ -1,3 +1,5 @@
+> Note: `v0.3.0` displays name in project picker. before this version, the default name is `name place holder`, you can edit the json file directly to change it to a more meaningful name. Or only display the path of the projects you added by modify the `choice_format` option in the config.
+
 # cd-project.nvim
 
 I tried quite a lot `Project Management` plugins.
@@ -27,6 +29,7 @@ return {
         projects_config_filepath = vim.fs.normalize(vim.fn.stdpath("config") .. "/cd-project.nvim.json"),
         -- this controls the behaviour of `CdProjectAdd` command about how to get the project directory
         project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
+        choice_format = "both", -- optional, you can switch to "name" or "path"
         projects_picker = "vim-ui", -- optional, you can switch to `telescope`
         -- do whatever you like by hooks
         hooks = {

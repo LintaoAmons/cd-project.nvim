@@ -13,15 +13,13 @@ end
 ---@param max_len integer
 local function format_entry(project, max_len)
 	local format = vim.g.cd_project_config.choice_format
-	if format == "both" then
-		return string.format("%-" .. max_len .. "s", project.name) .. "  |  " .. project.path
-	end
 	if format == "name" then
 		return project.name
 	end
 	if format == "path" then
 		return project.path
 	end
+	return string.format("%-" .. max_len .. "s", project.name) .. "  |  " .. project.path
 end
 
 return {
