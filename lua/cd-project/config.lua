@@ -1,8 +1,10 @@
 ---@alias CdProject.Adapter "telescope"|"vim-ui"
+---@alias CdProject.ChoiceFormat "name"|"path"|"both"
 
 ---@class CdProject.Config
 ---@field projects_config_filepath string
 ---@field project_dir_pattern string[]
+---@field choice_format? CdProject.ChoiceFormat
 ---@field projects_picker? CdProject.Adapter
 ---@field hooks? CdProject.Hook[]
 
@@ -13,8 +15,9 @@ local default_config = {
 	projects_config_filepath = vim.fs.normalize(vim.fn.stdpath("config") .. "/cd-project.nvim.json"),
 	-- this controls the behaviour of `CdProjectAdd` command about how to get the project directory
 	project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
+	choice_format = "both", -- optional, you can switch to "name" or "path"
 	projects_picker = "vim-ui", -- optional, you can switch to `telescope`
-  -- do whatever you like by hooks
+	-- do whatever you like by hooks
 	hooks = {
 		{
 			callback = function(dir)

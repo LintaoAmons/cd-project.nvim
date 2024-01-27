@@ -36,6 +36,16 @@ local function get_project_paths()
 	return paths
 end
 
+---@return string[]
+local function get_project_names()
+	local projects = project.get_projects()
+	local path_names = {}
+	for _, value in ipairs(projects) do
+		table.insert(path_names, value.name)
+	end
+	return path_names
+end
+
 ---@param dir string
 local function cd_project(dir)
 	vim.g.cd_project_last_project = vim.g.cd_project_current_project
@@ -63,7 +73,7 @@ local function add_current_project()
 
 	local new_project = {
 		path = project_dir,
-		name = "name place holder", -- TODO: allow user to edit the name of the project
+		name = utils.get_tail_of_path(project_dir),
 	}
 	table.insert(projects, new_project)
 	project.write_projects(projects)
@@ -81,7 +91,6 @@ end
 return {
 	cd_project = cd_project,
 	add_current_project = add_current_project,
-	get_project_paths = get_project_paths,
 	back = back,
 	find_project_dir = find_project_dir,
 }
