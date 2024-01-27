@@ -42,7 +42,7 @@ local cd_project = function(opts)
 				entry_maker = function(project)
 					return {
 						value = project,
-						display = string.format("%-" .. maxLength .. "s", project.name) .. "  |  " .. project.path,
+						display = utils.format_entry(project, maxLength),
 						ordinal = project.path,
 					}
 				end,

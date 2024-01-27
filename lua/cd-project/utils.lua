@@ -11,7 +11,23 @@ local function get_tail_of_path(path)
 	return path:match("([^/]+)$")
 end
 
+---@param project CdProject.Project
+---@param max_len integer
+local function format_entry(project, max_len)
+	local format = vim.g.cd_project_config.choice_format
+	if format == "both" then
+		return string.format("%-" .. max_len .. "s", project.name) .. "  |  " .. project.path
+	end
+	if format == "name" then
+		return project.name
+	end
+	if format == "path" then
+		return project.path
+	end
+end
+
 return {
 	log_error = log_error,
 	get_tail_of_path = get_tail_of_path,
+	format_entry = format_entry,
 }

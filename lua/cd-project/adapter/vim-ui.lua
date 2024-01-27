@@ -17,7 +17,7 @@ local function cd_project(opts)
 	vim.ui.select(projects, {
 		prompt = "Select a directory",
 		format_item = function(project)
-			return string.format("%-" .. maxLength .. "s", project.name) .. "  |  " .. project.path
+			return utils.format_entry(project, maxLength)
 		end,
 	}, function(selected)
 		if not selected then
