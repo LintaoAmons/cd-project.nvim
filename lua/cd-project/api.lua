@@ -59,34 +59,13 @@ local function cd_project(dir)
 	end
 end
 
-local function add_current_project()
-	local project_dir = find_project_dir()
-
-	if not project_dir then
-		return utils.log_err("Can't find project path of current file")
-	end
-
-	local projects = project.get_projects()
-
-	if vim.tbl_contains(get_project_paths(), project_dir) then
-		return vim.notify("Project already exists: " .. project_dir)
-	end
-
-	local new_project = {
-		path = project_dir,
-		name = utils.get_tail_of_path(project_dir),
-	}
-	table.insert(projects, new_project)
-	project.write_projects(projects)
-	vim.notify("Project added: \n" .. project_dir)
-end
-
----@param name string
 ---@param path string
+---@param name? string
 ---@return string|nil
 --- HACK: vague2k: probably a better way of doing this?
-local function add_project(name, path)
+local function add_project(path, name)
 	local normalized_path = vim.fn.expand(path)
+	name = utils.get_tail_of_path(path) or name
 	if vim.fn.isdirectory(normalized_path) == 0 then
 		return nil
 	end
@@ -94,7 +73,7 @@ local function add_project(name, path)
 	local projects = project.get_projects()
 
 	if vim.tbl_contains(get_project_paths(), normalized_path) then
-		return normalized_path
+		return vim.notify("Project already exists: " .. normalized_path)
 	end
 
 	local new_project = {
@@ -104,7 +83,18 @@ local function add_project(name, path)
 
 	table.insert(projects, new_project)
 	project.write_projects(projects)
+	vim.notify("Project added: \n" .. normalized_path)
 	return normalized_path
+end
+
+local function add_current_project()
+	local project_dir = find_project_dir()
+
+	if not project_dir then
+		return utils.log_err("Can't find project path of current file")
+	end
+
+	add_project(project_dir)
 end
 
 local function back()
