@@ -81,6 +81,33 @@ local function add_current_project()
 	vim.notify("Project added: \n" .. project_dir)
 end
 
+---@param name string
+---@param path string
+---@return string|nil
+
+--- HACK: vague2k: probably a better way of doing this?
+local function add_project(name, path)
+	local normalized_path = vim.fn.expand(path)
+	if vim.fn.isdirectory(normalized_path) == 0 then
+		return nil
+	end
+
+	local projects = project.get_projects()
+
+	if vim.tbl_contains(get_project_paths(), normalized_path) then
+		return normalized_path
+	end
+
+	local new_project = {
+		path = normalized_path,
+		name = name,
+	}
+
+	table.insert(projects, new_project)
+	project.write_projects(projects)
+	return normalized_path
+end
+
 local function back()
 	local last_project = vim.g.cd_project_last_project
 	if not last_project then
@@ -92,6 +119,7 @@ end
 return {
 	cd_project = cd_project,
 	add_current_project = add_current_project,
+	add_project = add_project,
 	back = back,
 	find_project_dir = find_project_dir,
 }
