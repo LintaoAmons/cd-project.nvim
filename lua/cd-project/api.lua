@@ -84,7 +84,6 @@ end
 ---@param name string
 ---@param path string
 ---@return string|nil
-
 --- HACK: vague2k: probably a better way of doing this?
 local function add_project(name, path)
 	local normalized_path = vim.fn.expand(path)
