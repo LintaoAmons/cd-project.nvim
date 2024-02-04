@@ -27,6 +27,16 @@ local function cd_project(opts)
 	end)
 end
 
+local function manual_cd_project()
+	-- ISSUE: vague2k: was getting weird behavior using a nested vim.ui.input() callback
+	-- and could not find appropriate docs or resources to help
+	-- ui is very bare bones but it works as intended
+	local final_path = vim.fn.input("Enter path: ")
+	local final_name = vim.fn.input("Enter name (optional): ")
+	api.add_project(final_path, final_name)
+end
+
 return {
 	cd_project = cd_project,
+	manual_cd_project = manual_cd_project,
 }
