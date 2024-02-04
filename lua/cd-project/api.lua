@@ -62,6 +62,8 @@ end
 ---@param path string
 ---@param name? string
 ---@return string|nil
+--- Add a project manually with a path, and optionally, a name.
+---
 --- HACK: vague2k: probably a better way of doing this?
 local function add_project(path, name)
 	local normalized_path = vim.fn.expand(path)
