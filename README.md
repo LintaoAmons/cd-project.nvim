@@ -39,6 +39,11 @@ return {
             end,
           },
           {
+            callback = function(_)
+              vim.cmd("Telescope find_files")
+            end,
+          },
+          {
             callback = function(dir)
               vim.notify("switched to dir: " .. dir)
             end, -- required, action when trigger the hook
@@ -55,6 +60,8 @@ return {
     end,
   }
 ```
+
+> [Hook examples](./HOOK_EXAMPLES.md)
 
 ## Commands and Apis
 
