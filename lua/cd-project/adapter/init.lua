@@ -7,6 +7,11 @@ local function cd_project()
 	require("cd-project.adapter.vim-ui").cd_project()
 end
 
+local function manual_cd_project()
+	require("cd-project.adapter.vim-ui").manual_cd_project()
+end
+
 return {
 	cd_project = cd_project,
+	manual_cd_project = manual_cd_project,
 }
