@@ -117,8 +117,6 @@ local manual_cd_project = function(opts)
 	})
 end
 
-manual_cd_project()
-
 return {
 	cd_project = cd_project,
 	manual_cd_project = manual_cd_project,
