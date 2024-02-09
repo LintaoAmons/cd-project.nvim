@@ -1,5 +1,5 @@
 local cd_hooks = require("cd-project.hooks")
-local project = require("cd-project.project-repo")
+local repo = require("cd-project.project-repo")
 local utils = require("cd-project.utils")
 
 ---@return string|nil
@@ -28,7 +28,7 @@ end
 
 ---@return string[]
 local function get_project_paths()
-	local projects = project.get_projects()
+	local projects = repo.get_projects()
 	local paths = {}
 	for _, value in ipairs(projects) do
 		table.insert(paths, value.path)
@@ -38,7 +38,7 @@ end
 
 ---@return string[]
 local function get_project_names()
-	local projects = project.get_projects()
+	local projects = repo.get_projects()
 	local path_names = {}
 	for _, value in ipairs(projects) do
 		table.insert(path_names, value.name)
@@ -59,34 +59,23 @@ local function cd_project(dir)
 	end
 end
 
----@param path string
----@param name? string
----@return string|nil
---- Add a project manually with a path, and optionally, a name.
----
---- HACK: vague2k: probably a better way of doing this?
-local function add_project(path, name)
-	local normalized_path = vim.fn.expand(path)
-	name = utils.get_tail_of_path(path) or name
-	if vim.fn.isdirectory(normalized_path) == 0 then
-		return nil
+---@param project CdProject.Project
+local function add_project(project)
+	local projects = repo.get_projects()
+
+	if vim.tbl_contains(get_project_paths(), project.path) then
+		return vim.notify("Project already exists: " .. project.path)
 	end
 
-	local projects = project.get_projects()
+	-- build PROJECT outside of this function, pass to this function as a whole
+	-- local new_project = {
+	-- 	path = normalized_path,
+	-- 	name = name,
+	-- }
 
-	if vim.tbl_contains(get_project_paths(), normalized_path) then
-		return vim.notify("Project already exists: " .. normalized_path)
-	end
-
-	local new_project = {
-		path = normalized_path,
-		name = name,
-	}
-
-	table.insert(projects, new_project)
-	project.write_projects(projects)
-	vim.notify("Project added: \n" .. normalized_path)
-	return normalized_path
+	table.insert(projects, project)
+	repo.write_projects(projects)
+	vim.notify("Project added: \n" .. project.path)
 end
 
 local function add_current_project()
@@ -96,6 +85,7 @@ local function add_current_project()
 		return utils.log_err("Can't find project path of current file")
 	end
 
+  -- build a project object then pass to add_project function
 	add_project(project_dir)
 end
 
