@@ -59,6 +59,23 @@ local function cd_project(dir)
 	end
 end
 
+---@param path string
+---@param name? string
+---@param desc? string|nil
+---@return CdProject.Project|nil
+local function build_project_obj(path, name, desc)
+	local normalized_path = vim.fn.expand(path)
+	if vim.fn.isdirectory(normalized_path) == 0 then
+		return utils.log_error(normalized_path .. " is not a directory")
+	end
+
+	return {
+		path = normalized_path,
+		name = name or utils.get_tail_of_path(normalized_path),
+		desc = desc,
+	}
+end
+
 ---@param project CdProject.Project
 local function add_project(project)
 	local projects = repo.get_projects()
@@ -66,12 +83,6 @@ local function add_project(project)
 	if vim.tbl_contains(get_project_paths(), project.path) then
 		return vim.notify("Project already exists: " .. project.path)
 	end
-
-	-- build PROJECT outside of this function, pass to this function as a whole
-	-- local new_project = {
-	-- 	path = normalized_path,
-	-- 	name = name,
-	-- }
 
 	table.insert(projects, project)
 	repo.write_projects(projects)
@@ -85,8 +96,13 @@ local function add_current_project()
 		return utils.log_err("Can't find project path of current file")
 	end
 
-  -- build a project object then pass to add_project function
-	add_project(project_dir)
+	local project = build_project_obj(project_dir)
+
+	if not project then
+		return
+	end
+
+	add_project(project)
 end
 
 local function back()
@@ -99,6 +115,9 @@ end
 
 return {
 	cd_project = cd_project,
+	build_project_obj = build_project_obj,
+	get_project_paths = get_project_paths,
+	get_project_names = get_project_names,
 	add_current_project = add_current_project,
 	add_project = add_project,
 	back = back,
