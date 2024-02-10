@@ -8,7 +8,7 @@ local function get_tail_of_path(path)
 	-- Remove leading directories, keep the last part
 	local tail = path:match("([^/]+)$")
 	local parent = path:match("^.*%/([^/]+)/?$") -- Get the parent directory
-	-- if foo/ return bar
+	-- if foo/ return foo
 	if parent and not tail then
 		return parent
 	-- if foo/bar, return bar
@@ -43,9 +43,39 @@ local check_for_find_cmd = function()
 	return find_command
 end
 
+---@param path string
+---@return string
+-- should be used in the telescope adapter's manual_cd_project method
+local function format_dir_based_on_os(path)
+	-- the "before format" example belows are how paths are passed to api.add_project
+
+	local is_mac = vim.loop.os_uname().sysname == "Darwin"
+	-- local is_linux = vim.loop.os_uname().sysname == "Linux"
+	local is_windows = vim.loop.os_uname().sysname:find("Windows") and true or false
+
+	-- before format: /foo/barbuzz
+	-- after format: /foo/bar/buzz
+	if is_mac then
+		return vim.fn.expand("~") .. "/" .. path
+	end
+
+	-- before format: C:\User\namepathname
+	-- after format: C:\User\name\pathname
+	if is_windows then
+		return vim.fn.expand("~") .. "\\" .. path
+	end
+
+	-- Linux
+	-- before format: ./foo/bar/buzz
+	-- after format: /home/user/foo/bar/buzz
+	local format_linux_path = path:gsub("^%./", vim.fn.expand("~") .. "/")
+	return format_linux_path
+end
+
 return {
 	log_error = log_error,
 	get_tail_of_path = get_tail_of_path,
 	format_entry = format_entry,
 	check_for_find_cmd = check_for_find_cmd,
+	format_dir_based_on_os = format_dir_based_on_os,
 }
