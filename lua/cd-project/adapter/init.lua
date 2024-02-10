@@ -8,6 +8,10 @@ local function cd_project()
 end
 
 local function manual_cd_project()
+	local projects_picker = vim.g.cd_project_config.projects_picker
+	if projects_picker == "telescope" then
+		return require("cd-project.adapter.telescope").manual_cd_project()
+	end
 	require("cd-project.adapter.vim-ui").manual_cd_project()
 end
 
