@@ -30,8 +30,7 @@ end
 local function manual_cd_project()
 	vim.ui.input({ prompt = "Add a project path: " }, function(path)
 		if not path or path == "" then
-			utils.log_error("No path given, quitting.")
-			return
+			return utils.log_error("No path given, quitting.")
 		end
 
 		vim.ui.input({ prompt = "Add a project name: " }, function(name)
@@ -40,7 +39,12 @@ local function manual_cd_project()
 				return api.add_project(path)
 			end
 
-			return api.add_project(path, name)
+			local project = api.build_project_obj(path, name)
+			if not project then
+				return
+			end
+
+			return api.add_project(project)
 		end)
 	end)
 end
