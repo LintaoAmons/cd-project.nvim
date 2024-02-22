@@ -80,13 +80,13 @@ require("cd-project.api").some_method()
 
 you can find the exported Apis at [./lua/cd-project/api.lua](./lua/cd-project/api.lua)
 
-## Contribution
+## CONTRIBUTING
 
-I provide a [video](https://youtu.be/V6B6uMCmMTg) to explain how this plugin is structured
+Don't hesitate to ask me anything about the codebase if you want to contribute.
 
-it should be helpful if you want to understand the plugin and contribute.
+You can contact with me by drop me an email or [telegram](https://t.me/+ssgpiHyY9580ZWFl)
 
-## FIND MORE UESR FRIENDLY PLUGINS MADE BY ME
+## FIND MORE USER FRIENDLY PLUGINS MADE BY ME
 
 - [scratch.nvim](https://github.com/LintaoAmons/scratch.nvim)
 - [easy-commands.nvim](https://github.com/LintaoAmons/easy-commands.nvim)
