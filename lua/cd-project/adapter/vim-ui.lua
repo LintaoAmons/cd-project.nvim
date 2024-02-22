@@ -27,6 +27,29 @@ local function cd_project(opts)
 	end)
 end
 
+local function manual_cd_project()
+	vim.ui.input({ prompt = "Add a project path: " }, function(path)
+		if not path or path == "" then
+			return utils.log_error("No path given, quitting.")
+		end
+
+		vim.ui.input({ prompt = "Add a project name: " }, function(name)
+			if not name or name == "" then
+				vim.notify('No name given, using "' .. utils.get_tail_of_path(path) .. '" instead')
+				return api.add_project(path)
+			end
+
+			local project = api.build_project_obj(path, name)
+			if not project then
+				return
+			end
+
+			return api.add_project(project)
+		end)
+	end)
+end
+
 return {
 	cd_project = cd_project,
+	manual_cd_project = manual_cd_project,
 }

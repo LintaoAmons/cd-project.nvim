@@ -1,5 +1,5 @@
 local cd_hooks = require("cd-project.hooks")
-local project = require("cd-project.project-repo")
+local repo = require("cd-project.project-repo")
 local utils = require("cd-project.utils")
 
 ---@return string|nil
@@ -28,7 +28,7 @@ end
 
 ---@return string[]
 local function get_project_paths()
-	local projects = project.get_projects()
+	local projects = repo.get_projects()
 	local paths = {}
 	for _, value in ipairs(projects) do
 		table.insert(paths, value.path)
@@ -38,7 +38,7 @@ end
 
 ---@return string[]
 local function get_project_names()
-	local projects = project.get_projects()
+	local projects = repo.get_projects()
 	local path_names = {}
 	for _, value in ipairs(projects) do
 		table.insert(path_names, value.name)
@@ -58,6 +58,36 @@ local function cd_project(dir)
 	end
 end
 
+---@param path string
+---@param name? string
+---@param desc? string|nil
+---@return CdProject.Project|nil
+local function build_project_obj(path, name, desc)
+	local normalized_path = vim.fn.expand(path)
+	if vim.fn.isdirectory(normalized_path) == 0 then
+		return utils.log_error(normalized_path .. " is not a directory")
+	end
+
+	return {
+		path = normalized_path,
+		name = name or utils.get_tail_of_path(normalized_path),
+		desc = desc,
+	}
+end
+
+---@param project CdProject.Project
+local function add_project(project)
+	local projects = repo.get_projects()
+
+	if vim.tbl_contains(get_project_paths(), project.path) then
+		return vim.notify("Project already exists: " .. project.path)
+	end
+
+	table.insert(projects, project)
+	repo.write_projects(projects)
+	vim.notify("Project added: \n" .. project.path)
+end
+
 local function add_current_project()
 	local project_dir = find_project_dir()
 
@@ -65,19 +95,13 @@ local function add_current_project()
 		return utils.log_err("Can't find project path of current file")
 	end
 
-	local projects = project.get_projects()
+	local project = build_project_obj(project_dir)
 
-	if vim.tbl_contains(get_project_paths(), project_dir) then
-		return vim.notify("Project already exists: " .. project_dir)
+	if not project then
+		return
 	end
 
-	local new_project = {
-		path = project_dir,
-		name = utils.get_tail_of_path(project_dir),
-	}
-	table.insert(projects, new_project)
-	project.write_projects(projects)
-	vim.notify("Project added: \n" .. project_dir)
+	add_project(project)
 end
 
 local function back()
@@ -90,7 +114,11 @@ end
 
 return {
 	cd_project = cd_project,
+	build_project_obj = build_project_obj,
+	get_project_paths = get_project_paths,
+	get_project_names = get_project_names,
 	add_current_project = add_current_project,
+	add_project = add_project,
 	back = back,
 	find_project_dir = find_project_dir,
 }
