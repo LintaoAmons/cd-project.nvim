@@ -35,8 +35,8 @@ local function manual_cd_project()
 
 		vim.ui.input({ prompt = "Add a project name: " }, function(name)
 			if not name or name == "" then
-				vim.notify('No name given, using "' .. utils.get_tail_of_path(path) .. '" instead')
-				return api.add_project(path)
+        name = utils.get_tail_of_path(path)
+				vim.notify('No name given, using "' .. name .. '" instead')
 			end
 
 			local project = api.build_project_obj(path, name)
