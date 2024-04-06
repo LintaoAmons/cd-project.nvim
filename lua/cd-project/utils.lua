@@ -40,7 +40,7 @@ local check_for_find_cmd = function()
 	-- if unix like system
 	if package.config:sub(1, 1) == "/" then
 		-- list of directories that should be excluded, that fill 1 of these 2 criteria
-		-- 1. Is reasonably unlikely that a user will have a project worth adding in the directory
+		-- 1. Is reasonably unlikely that a user will not have a project worth adding in the directory
 		-- 2. Causes unreasonable hang times in executing command
 		-- a prime example would be the hidden "/Library" dir on macOS systems.
 		local find_command = (function()

@@ -70,7 +70,6 @@ local search_and_add = function(opts)
 						actions.select_default:replace(function()
 							actions.close(prompt_bufnr)
 							local selected_dir = action_state.get_selected_entry().value
-							-- local formatted_path = utils.format_dir_based_on_os(selected_dir)
 
 							vim.ui.input({ prompt = "Add a project name: " }, function(name)
 								if not name or name == "" then
