@@ -35,7 +35,7 @@ end
 --
 -- I feel like not checking for "find" is a worthy trade off
 --
--- TODO: Test on windows and mac. I'm 98% sure fd handles path string formatting
+-- TODO: Test on windows. I'm 98% sure fd handles path string formatting
 local check_for_find_cmd = function()
 	-- if unix like system
 	if package.config:sub(1, 1) == "/" then
