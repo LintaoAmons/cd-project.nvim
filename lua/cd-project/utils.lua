@@ -30,46 +30,38 @@ local function format_entry(project, max_len)
 	return string.format("%-" .. max_len .. "s", project.name) .. "  |  " .. project.path
 end
 
+-- vague2k: We *could* check for the "find" command but then we would need to format
+-- the telescope picker, which can lead to uneeded complexity.
+--
+-- I feel like not checking for "find" is a worthy trade off
+--
+-- TODO: Test on windows. I'm 98% sure fd handles path string formatting
 local check_for_find_cmd = function()
+	-- if unix like system
+	if package.config:sub(1, 1) == "/" then
+		-- list of directories that should be excluded, that fill 1 of these 2 criteria
+		-- 1. Is reasonably unlikely that a user will not have a project worth adding in the directory
+		-- 2. Causes unreasonable hang times in executing command
+		-- a prime example would be the hidden "/Library" dir on macOS systems.
+		local find_command = (function()
+			if 1 == vim.fn.executable("fd") then
+				return "fd --type d --hidden -E Library -E .local -E .cache . ~"
+			elseif 1 == vim.fn.executable("fdfind") then
+				return "fdfind --type d --hidden -E Library -E .local -E .cache . ~"
+			end
+		end)()
+		return find_command
+	end
+
+	-- any system that isn't unix like
 	local find_command = (function()
 		if 1 == vim.fn.executable("fd") then
 			return { "fd", "--type", "d", "--color", "never" }
 		elseif 1 == vim.fn.executable("fdfind") then
 			return { "fdfind", "--type", "d", "--color", "never" }
-		elseif 1 == vim.fn.executable("find") and vim.fn.has("win32") == 0 then
-			return { "find", ".", "-type", "d" }
 		end
 	end)()
 	return find_command
-end
-
----@param path string
----@return string
--- should be used in the telescope adapter's manual_cd_project method
-local function format_dir_based_on_os(path)
-	-- the "before format" example belows are how paths are passed to api.add_project
-
-	local is_mac = vim.loop.os_uname().sysname == "Darwin"
-	-- local is_linux = vim.loop.os_uname().sysname == "Linux"
-	local is_windows = vim.loop.os_uname().sysname:find("Windows") and true or false
-
-	-- before format: /foo/barbuzz
-	-- after format: /foo/bar/buzz
-	if is_mac then
-		return vim.fn.expand("~") .. "/" .. path
-	end
-
-	-- before format: C:\User\namepathname
-	-- after format: C:\User\name\pathname
-	if is_windows then
-		return vim.fn.expand("~") .. "\\" .. path
-	end
-
-	-- Linux
-	-- before format: ./foo/bar/buzz
-	-- after format: /home/user/foo/bar/buzz
-	local format_linux_path = path:gsub("^%./", vim.fn.expand("~") .. "/")
-	return format_linux_path
 end
 
 return {
@@ -77,5 +69,4 @@ return {
 	get_tail_of_path = get_tail_of_path,
 	format_entry = format_entry,
 	check_for_find_cmd = check_for_find_cmd,
-	format_dir_based_on_os = format_dir_based_on_os,
 }
