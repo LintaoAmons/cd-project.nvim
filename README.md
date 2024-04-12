@@ -64,13 +64,13 @@ return {
 
 ## Commands and Apis
 
-| Command          | Description                                                                 |
-| ---------------- | --------------------------------------------------------------------------- |
-| `CdProject`      | change working directory                                                    |
-| `CdProjectAdd`   | add current project's directory to the database(json file)                  |
-| `CdProjectBack`  | quickly switch between current project and previous project                 |
-| `CdManualAdd`    | Manually add a path and optionally give it a name                           |
-| `CdSearchAndAdd` | fuzzy find directories in $HOME using telescope and optional give it a name |
+| Command              | Description                                                                 |
+| -------------------- | --------------------------------------------------------------------------- |
+| `CdProject`          | change working directory                                                    |
+| `CdProjectAdd`       | add current project's directory to the database(json file)                  |
+| `CdProjectBack`      | quickly switch between current project and previous project                 |
+| `CdProjectManualAdd` | Manually add a path and optionally give it a name                           |
+| `CdSearchAndAdd`     | fuzzy find directories in $HOME using telescope and optional give it a name |
 
 You can call the Apis provided by the plugin, to integrate into your own work flow
 
