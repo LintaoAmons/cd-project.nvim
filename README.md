@@ -14,7 +14,6 @@ This plugin did nothing but provided a simplier way to add and switch to directo
 
 ![HowItWorks](https://github.com/LintaoAmons/cd-project.nvim/assets/95092244/6fa66d86-38c0-4ea8-ad5e-a6ed14c263ef)
 
-
 ## Install and Config
 
 ```lua
@@ -65,12 +64,13 @@ return {
 
 ## Commands and Apis
 
-| Command         | Description                                                 |
-|-----------------|-------------------------------------------------------------|
-| `CdProject`     | change working directory                                    |
-| `CdProjectAdd`  | add current project's directory to the database(json file)  |
-| `CdProjectBack` | quickly switch between current project and previous project |
-
+| Command              | Description                                                                 |
+| -------------------- | --------------------------------------------------------------------------- |
+| `CdProject`          | change working directory                                                    |
+| `CdProjectAdd`       | add current project's directory to the database(json file)                  |
+| `CdProjectBack`      | quickly switch between current project and previous project                 |
+| `CdProjectManualAdd` | Manually add a path and optionally give it a name                           |
+| `CdSearchAndAdd`     | fuzzy find directories in $HOME using telescope and optional give it a name |
 
 You can call the Apis provided by the plugin, to integrate into your own work flow
 
