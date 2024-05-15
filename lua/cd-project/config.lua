@@ -17,6 +17,7 @@ local default_config = {
 	project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
 	choice_format = "both", -- optional, you can switch to "name" or "path"
 	projects_picker = "vim-ui", -- optional, you can switch to `telescope`
+	auto_register_project = true, -- optional, toggle on/off the auto add project behaviour
 	-- do whatever you like by hooks
 	hooks = {
 		{
@@ -48,6 +49,9 @@ vim.g.cd_project_config = default_config
 M.setup = function(user_config)
 	local previous_config = vim.g.cd_project_config or default_config
 	vim.g.cd_project_config = vim.tbl_deep_extend("force", previous_config, user_config or {}) or default_config
+	if vim.g.cd_project_config.auto_register_project then
+		require("cd-project.auto").auto_register_project_setup()
+	end
 end
 
 return M

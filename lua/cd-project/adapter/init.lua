@@ -20,8 +20,15 @@ local function telescope_search_and_add()
 	end
 end
 
+local function delete_project()
+  require("cd-project.adapter.telescope").project_picker(function (project)
+    require("cd-project.api").delete_project( project)
+  end)
+end
+
 return {
 	cd_project = cd_project,
 	manual_cd_project = manual_cd_project,
 	telescope_search_and_add = telescope_search_and_add,
+  delete_project = delete_project,
 }

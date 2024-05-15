@@ -13,6 +13,47 @@ local action_state = require("telescope.actions.state")
 local repo = require("cd-project.project-repo")
 local api = require("cd-project.api")
 
+---@param callback fun(project: CdProject.Project): nil
+---@param opts? table
+local function project_picker(callback, opts)
+	opts = opts or {}
+	-- TODO: a format function
+	local projects = repo.get_projects()
+	local maxLength = 0
+	for _, project in ipairs(projects) do
+		if #project.name > maxLength then
+			maxLength = #project.name
+		end
+	end
+
+	pickers
+		.new(opts, {
+			attach_mappings = function(prompt_bufnr)
+				actions.select_default:replace(function()
+					actions.close(prompt_bufnr)
+					---@type CdProject.Project
+					local selected_project = action_state.get_selected_entry().value
+					callback(selected_project)
+				end)
+				return true
+			end,
+			prompt_title = "[CdProject]",
+			finder = finders.new_table({
+				results = projects,
+				---@param project CdProject.Project
+				entry_maker = function(project)
+					return {
+						value = project,
+						display = utils.format_entry(project, maxLength),
+						ordinal = project.path,
+					}
+				end,
+			}),
+			sorter = conf.generic_sorter(opts),
+		})
+		:find()
+end
+
 ---@param opts? table
 local cd_project = function(opts)
 	opts = opts or {}
@@ -106,4 +147,5 @@ end
 return {
 	cd_project = cd_project,
 	search_and_add = search_and_add,
+  project_picker = project_picker,
 }

@@ -80,12 +80,27 @@ local function add_project(project)
 	local projects = repo.get_projects()
 
 	if vim.tbl_contains(get_project_paths(), project.path) then
-		return vim.notify("Project already exists: " .. project.path)
+		return vim.notify(
+			"Project already exists: " .. project.path,
+			vim.log.levels.INFO,
+			{ title = "cd-project.nvim" }
+		)
 	end
 
 	table.insert(projects, project)
 	repo.write_projects(projects)
-	vim.notify("Project added: \n" .. project.path)
+	vim.notify("Project added: \n" .. project.path, vim.log.levels.INFO, { title = "cd-project.nvim" })
+end
+
+---@param project CdProject.Project
+local function delete_project(project)
+	local projects = repo.get_projects()
+
+	local new_projects = vim.tbl_filter(function(p)
+		return p.name ~= project.name
+	end, projects)
+	repo.write_projects(new_projects)
+	vim.notify("Project deleted: \n" .. project.name, vim.log.levels.INFO, { title = "cd-project.nvim" })
 end
 
 local function add_current_project()
@@ -119,6 +134,7 @@ return {
 	get_project_names = get_project_names,
 	add_current_project = add_current_project,
 	add_project = add_project,
+	delete_project = delete_project,
 	back = back,
 	find_project_dir = find_project_dir,
 }
