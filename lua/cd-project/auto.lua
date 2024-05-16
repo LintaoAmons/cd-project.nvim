@@ -6,8 +6,7 @@ local function setup()
 	vim.api.nvim_create_autocmd({ "VimEnter" }, {
 		group = auto_group_name,
 		callback = function(_)
-			api.add_current_project()
-      vim.print("method called")
+			api.add_current_project({ show_duplicate_hints = false })
 		end,
 	})
 end

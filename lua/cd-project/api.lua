@@ -76,15 +76,17 @@ local function build_project_obj(path, name, desc)
 end
 
 ---@param project CdProject.Project
-local function add_project(project)
+---@param opts? {show_duplicate_hints: boolean}
+local function add_project(project, opts)
 	local projects = repo.get_projects()
+	opts = opts or { show_duplicate_hints = true }
 
 	if vim.tbl_contains(get_project_paths(), project.path) then
-		return vim.notify(
-			"Project already exists: " .. project.path,
-			vim.log.levels.INFO,
-			{ title = "cd-project.nvim" }
-		)
+		if opts.show_duplicate_hints then
+			vim.notify("Project already exists: " .. project.path, vim.log.levels.INFO, { title = "cd-project.nvim" })
+		end
+
+		return
 	end
 
 	table.insert(projects, project)
@@ -103,8 +105,10 @@ local function delete_project(project)
 	vim.notify("Project deleted: \n" .. project.name, vim.log.levels.INFO, { title = "cd-project.nvim" })
 end
 
-local function add_current_project()
+---@param opts? {show_duplicate_hints: boolean}
+local function add_current_project(opts)
 	local project_dir = find_project_dir()
+	opts = opts or { show_duplicate_hints = true }
 
 	if not project_dir then
 		return utils.log_err("Can't find project path of current file")
@@ -116,7 +120,7 @@ local function add_current_project()
 		return
 	end
 
-	add_project(project)
+	add_project(project, opts)
 end
 
 local function back()
