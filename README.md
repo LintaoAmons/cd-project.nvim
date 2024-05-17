@@ -21,7 +21,7 @@ This plugin did nothing but provided a simplier way to add and switch to directo
 return {
     "LintaoAmons/cd-project.nvim",
     -- Don't need call the setup function if you think you are good with the default configuration
-    tag = "v0.6.0" -- Optional, You can also use tag to pin the plugin version for stability
+    tag = "v0.6.1" -- Optional, You can also use tag to pin the plugin version for stability
     config = function()
       require("cd-project").setup({
         -- this json file is acting like a database to update and read the projects in real time.
