@@ -21,6 +21,7 @@ This plugin did nothing but provided a simplier way to add and switch to directo
 return {
     "LintaoAmons/cd-project.nvim",
     -- Don't need call the setup function if you think you are good with the default configuration
+    tag = "v0.6.0" -- Optional, You can also use tag to pin the plugin version for stability
     config = function()
       require("cd-project").setup({
         -- this json file is acting like a database to update and read the projects in real time.
@@ -30,7 +31,7 @@ return {
         project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
         choice_format = "both", -- optional, you can switch to "name" or "path"
         projects_picker = "vim-ui", -- optional, you can switch to `telescope`
-        auto_register_project = true, -- optional, toggle on/off the auto add project behaviour
+        auto_register_project = false, -- optional, toggle on/off the auto add project behaviour
         -- do whatever you like by hooks
         hooks = {
           {
