@@ -50,7 +50,9 @@ M.setup = function(user_config)
 	local previous_config = vim.g.cd_project_config or default_config
 	vim.g.cd_project_config = vim.tbl_deep_extend("force", previous_config, user_config or {}) or default_config
 	if vim.g.cd_project_config.auto_register_project then
-		require("cd-project.auto").auto_register_project_setup()
+		require("cd-project.auto").setup()
+	else
+		require("cd-project.auto").clear()
 	end
 end
 

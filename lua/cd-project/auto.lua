@@ -1,7 +1,7 @@
 local api = require("cd-project.api")
-local function setup()
-	local auto_group_name = "CdProjectPlugin"
+local auto_group_name = "CdProjectPlugin"
 
+local function setup()
 	vim.api.nvim_create_augroup(auto_group_name, { clear = true })
 	vim.api.nvim_create_autocmd({ "VimEnter" }, {
 		group = auto_group_name,
@@ -11,6 +11,11 @@ local function setup()
 	})
 end
 
+local function clear()
+	vim.api.nvim_create_augroup(auto_group_name, { clear = true })
+end
+
 return {
-	auto_register_project_setup = setup,
+	setup = setup,
+	clear = clear,
 }
