@@ -1,5 +1,3 @@
-> Note: `v0.3.0` displays name in project picker. before this version, the default name is `name place holder`, you can edit the json file directly to change it to a more meaningful name. Or only display the path of the projects you added by modify the `choice_format` option in the config.
-
 # cd-project.nvim
 
 I tried quite a lot `Project Management` plugins.
@@ -10,7 +8,7 @@ I found all I need is an easier way to `cd` to another project directory.
 
 ## How it works?
 
-This plugin did nothing but provided a simplier way to add and switch to directories
+This plugin did nothing but provide a simpler way to add, persist and switch to directories.
 
 ![HowItWorks](https://github.com/LintaoAmons/cd-project.nvim/assets/95092244/6fa66d86-38c0-4ea8-ad5e-a6ed14c263ef)
 
