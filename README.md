@@ -15,6 +15,16 @@ This plugin did nothing but provided a simplier way to add and switch to directo
 ![HowItWorks](https://github.com/LintaoAmons/cd-project.nvim/assets/95092244/6fa66d86-38c0-4ea8-ad5e-a6ed14c263ef)
 
 ## Install and Config
+> My config as ref: https://github.com/LintaoAmons/dotfiles/blob/master/nvim/.config/nvim/lua/plugins/editor/project.lua
+
+- Simple version
+
+```lua
+-- using lazy.nvim
+return { "LintaoAmons/cd-project.nvim" }
+```
+
+- All config options
 
 ```lua
 -- using lazy.nvim
