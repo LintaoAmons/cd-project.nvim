@@ -17,6 +17,12 @@ local function get_tail_of_path(path)
 	end
 end
 
+---@param path string
+local function remove_trailing_slash(path)
+  -- Remove trailing slash if it exists
+  return (path:gsub("(.)/*$", "%1"))
+end
+
 ---@param project CdProject.Project
 ---@param max_len integer
 local function format_entry(project, max_len)
@@ -67,6 +73,7 @@ end
 return {
 	log_error = log_error,
 	get_tail_of_path = get_tail_of_path,
+  remove_trailing_slash = remove_trailing_slash,
 	format_entry = format_entry,
 	check_for_find_cmd = check_for_find_cmd,
 }

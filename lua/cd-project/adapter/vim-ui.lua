@@ -27,6 +27,31 @@ local function cd_project(opts)
 	end)
 end
 
+---@param opts? table
+local function cd_project_in_tab(opts)
+	opts = opts or {}
+	local projects = repo.get_projects()
+
+	local maxLength = 0
+	for _, project in ipairs(projects) do
+		if #project.name > maxLength then
+			maxLength = #project.name
+		end
+	end
+
+	vim.ui.select(projects, {
+		prompt = "Select a directory",
+		format_item = function(project)
+			return utils.format_entry(project, maxLength)
+		end,
+	}, function(selected)
+		if not selected then
+			return utils.log_error("Must select a valid dir")
+		end
+		api.cd_project_in_tab(selected.path)
+	end)
+end
+
 local function manual_cd_project()
 	vim.ui.input({ prompt = "Add a project path: " }, function(path)
 		if not path or path == "" then
@@ -51,5 +76,6 @@ end
 
 return {
 	cd_project = cd_project,
+	cd_project_in_tab = cd_project_in_tab,
 	manual_cd_project = manual_cd_project,
 }

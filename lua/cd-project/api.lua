@@ -46,6 +46,46 @@ local function get_project_names()
 	return path_names
 end
 
+---@param path string
+local function path_exists_in_tab(path)
+  for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
+    local tab_cwd = vim.fn.getcwd(-1, vim.api.nvim_tabpage_get_number(tabpage))
+    local normalized_path = utils.remove_trailing_slash(path)
+    local normalized_tab_cwd = utils.remove_trailing_slash(tab_cwd)
+    if normalized_path == normalized_tab_cwd then
+      return tabpage
+    end
+  end
+  return nil
+end
+
+---@param dir string
+local function cd_project_in_tab(dir)
+	vim.g.cd_project_last_project = vim.g.cd_project_current_project
+	vim.g.cd_project_current_project = dir
+
+  local tabnr = path_exists_in_tab(dir)
+  if tabnr ~= nil then
+    -- Remain in current tab if current tab holds target dir
+    if vim.api.nvim_get_current_tabpage() == tabnr then
+		  vim.notify("Dir already open in current tab (#" .. tabnr .. "). No action taken.", vim.log.levels.INFO, { title = "cd-project.nvim" })
+      return
+    end
+
+    -- Switch to tab that holds target dir
+    vim.api.nvim_set_current_tabpage(tabnr)
+		vim.notify("Dir already open in tab #" .. tabnr .. ". You have been redirected.", vim.log.levels.INFO, { title = "cd-project.nvim" })
+    return
+  end
+
+  vim.fn.execute("tabe | tcd " .. vim.fn.fnameescape(dir))
+
+	local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "AFTER_CD")
+	for _, hook in ipairs(hooks) do
+		hook(dir)
+	end
+end
+
 ---@param dir string
 local function cd_project(dir)
 	vim.g.cd_project_last_project = vim.g.cd_project_current_project
@@ -133,6 +173,7 @@ end
 
 return {
 	cd_project = cd_project,
+	cd_project_in_tab = cd_project_in_tab,
 	build_project_obj = build_project_obj,
 	get_project_paths = get_project_paths,
 	get_project_names = get_project_names,
