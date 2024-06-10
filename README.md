@@ -77,6 +77,7 @@ return {
 | Command              | Description                                                                 |
 | -------------------- | --------------------------------------------------------------------------- |
 | `CdProject`          | change working directory                                                    |
+| `CdProjectTab`       | change working directory in tab                                             |
 | `CdProjectAdd`       | add current project's directory to the database(json file)                  |
 | `CdProjectBack`      | quickly switch between current project and previous project                 |
 | `CdProjectManualAdd` | Manually add a path and optionally give it a name                           |
