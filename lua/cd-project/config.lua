@@ -7,6 +7,7 @@
 ---@field choice_format? CdProject.ChoiceFormat
 ---@field projects_picker? CdProject.Adapter
 ---@field hooks? CdProject.Hook[]
+---@field format_json? boolean
 
 ---@type CdProject.Config
 local default_config = {
@@ -37,7 +38,7 @@ local default_config = {
         return true
       end,
     },
-  },
+  }
 }
 
 local M = {}

@@ -64,7 +64,7 @@ return {
               return true
             end,
           },
-        },
+        } 
       })
     end,
   }
