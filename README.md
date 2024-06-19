@@ -64,8 +64,7 @@ return {
               return true
             end,
           },
-        },
-        format_json = false, -- optional, requires jq; whether to format the contents of the JSON file
+        } 
       })
     end,
   }
