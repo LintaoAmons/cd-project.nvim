@@ -93,6 +93,8 @@ you can find the exported Apis at [./lua/cd-project/api.lua](./lua/cd-project/ap
 
 ## CONTRIBUTING
 
+- [ ] Remember the buffer and cursor location while switch to the project
+
 Don't hesitate to ask me anything about the codebase if you want to contribute.
 
 You can contact with me by drop me an email or [telegram](https://t.me/+ssgpiHyY9580ZWFl)
