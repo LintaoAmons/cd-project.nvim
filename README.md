@@ -13,7 +13,7 @@ This plugin did nothing but provide a simpler way to add, persist and switch to 
 ![HowItWorks](https://github.com/LintaoAmons/cd-project.nvim/assets/95092244/6fa66d86-38c0-4ea8-ad5e-a6ed14c263ef)
 
 ## Install and Config
-> My config as ref: https://github.com/LintaoAmons/dotfiles/blob/master/nvim/.config/nvim/lua/plugins/editor/project.lua
+> [My config as ref](https://github.com/LintaoAmons/CoolStuffes/blob/main/nvim/.config/nvim/lua/plugins/editor-enhance/project.lua)
 
 - Simple version
 
@@ -30,7 +30,7 @@ return {
     "LintaoAmons/cd-project.nvim",
     -- Don't need call the setup function if you think you are good with the default configuration
     tag = "v0.6.1", -- Optional, You can also use tag to pin the plugin version for stability
-    config = function()
+    init = function() -- use init if you want enable auto_register_project, otherwise config is good
       require("cd-project").setup({
         -- this json file is acting like a database to update and read the projects in real time.
         -- So because it's just a json file, you can edit directly to add more paths you want manually
