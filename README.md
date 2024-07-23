@@ -91,18 +91,19 @@ require("cd-project.api").some_method()
 
 you can find the exported Apis at [./lua/cd-project/api.lua](./lua/cd-project/api.lua)
 
-## CONTRIBUTING
-
 - [ ] Remember the buffer and cursor location while switch to the project
+
+## CONTRIBUTING
 
 Don't hesitate to ask me anything about the codebase if you want to contribute.
 
-You can contact with me by drop me an email or [telegram](https://t.me/+ssgpiHyY9580ZWFl)
+By [telegram](https://t.me/+ssgpiHyY9580ZWFl) or [微信: CateFat](https://lintao-index.pages.dev/assets/images/wechat-437d6c12efa9f89bab63c7fe07ce1927.png)
 
-## FIND MORE USER FRIENDLY PLUGINS MADE BY ME
+## Some Other Neovim Stuff
 
+- [my neovim config](https://github.com/LintaoAmons/CoolStuffes/tree/main/nvim/.config/nvim)
 - [scratch.nvim](https://github.com/LintaoAmons/scratch.nvim)
-- [easy-commands.nvim](https://github.com/LintaoAmons/easy-commands.nvim)
 - [cd-project.nvim](https://github.com/LintaoAmons/cd-project.nvim)
 - [bookmarks.nvim](https://github.com/LintaoAmons/bookmarks.nvim)
-- [plugin-template.nvim](https://github.com/LintaoAmons/plugin-template.nvim)
+- [context-menu.nvim](https://github.com/LintaoAmons/context-menu.nvim)
+
