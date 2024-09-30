@@ -98,11 +98,17 @@ end
 local function cd_project(dir)
   vim.g.cd_project_last_project = vim.g.cd_project_current_project
   vim.g.cd_project_current_project = dir
+
+  local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "BEFORE_CD")
+  for _, hook in ipairs(hooks) do
+    hook.callback(dir)
+  end
+
   vim.fn.execute("cd " .. vim.fn.fnameescape(dir))
 
   local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "AFTER_CD")
   for _, hook in ipairs(hooks) do
-    hook(dir)
+    hook.callback(dir)
   end
 end
 

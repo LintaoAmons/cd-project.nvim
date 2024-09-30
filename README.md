@@ -42,28 +42,23 @@ return {
         auto_register_project = false, -- optional, toggle on/off the auto add project behaviour
         -- do whatever you like by hooks
         hooks = {
-          {
-            callback = function(dir)
-              vim.notify("switched to dir: " .. dir)
-            end,
-          },
-          {
-            callback = function(_)
-              vim.cmd("Telescope find_files")
-            end,
-          },
-          {
-            callback = function(dir)
-              vim.notify("switched to dir: " .. dir)
-            end, -- required, action when trigger the hook
-            name = "cd hint", -- optional
-            order = 1, -- optional, the exection order if there're multiple hooks to be trigger at one point
-            pattern = "cd-project.nvim", -- optional, trigger hook if contains pattern
-            trigger_point = "DISABLE", -- optional, enum of trigger_points, default to `AFTER_CD`
-            match_rule = function(dir) -- optional, a function return bool. if have this fields, then pattern will be ignored
-              return true
-            end,
-          },
+          -- Run before cd to project, add a bookmark here, then can use `CdProjectBack` to switch back
+          -- {
+          --   trigger_point = "BEFORE_CD",
+          --   callback = function(_)
+          --     vim.print("before cd project")
+          --     require("bookmarks").api.mark({name = "before cd project"})
+          --   end,
+          -- },
+          -- Run after cd to project, find and open a file in the target project by smart-open
+          -- {
+          --   callback = function(_)
+          --     require("telescope").extensions.smart_open.smart_open({
+          --       cwd_only = true,
+          --       filename_first = false,
+          --     })
+          --   end,
+          -- },
         } 
       })
     end,
