@@ -90,7 +90,7 @@ local function cd_project_in_tab(dir)
 
   local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "AFTER_CD")
   for _, hook in ipairs(hooks) do
-    hook(dir)
+    hook.callback(dir)
   end
 end
 
