@@ -66,36 +66,26 @@ return {
 
 > [Hook examples](./HOOK_EXAMPLES.md)
 
-## Commands and Apis
+## Commands and Workflow
 
 | Command              | Description                                                                 |
 | -------------------- | --------------------------------------------------------------------------- |
 | `CdProject`          | change working directory                                                    |
-| `CdProjectTab`       | change working directory in tab                                             |
+| `CdProjectTab`       | change working directory in tab (or you can use `<c-o>` when `CdProject`)   |
 | `CdProjectAdd`       | add current project's directory to the database(json file)                  |
 | `CdProjectBack`      | quickly switch between current project and previous project                 |
 | `CdProjectManualAdd` | Manually add a path and optionally give it a name                           |
 | `CdSearchAndAdd`     | fuzzy find directories in $HOME using telescope and optional give it a name |
 
-You can call the Apis provided by the plugin, to integrate into your own work flow
-
-```lua
-require("cd-project.api").some_method()
-```
-
-you can find the exported Apis at [./lua/cd-project/api.lua](./lua/cd-project/api.lua)
-
-- [ ] Remember the buffer and cursor location while switch to the project
-
 ### Workflow
 
 1. Add a project into `cd-project.nvim`: `CdProjectAdd`
 2. switch to the project: `CdProject`
-    1. `<CR>` will go to the project, change current working directory to the project
-    2. `AFTER_CD` hook will be triggered, I use it to open a file in the project by `smart-open`
-    3. Or in the telescope picker, you can use `<c-o>` to open a project in a new tab, or switch to that project's tab if it's already opened
+   1. `<CR>` will go to the project, change current working directory to the project
+   2. `AFTER_CD` hook will be triggered, I use it to open a file in the project by `smart-open`
+   3. Or in the telescope picker, you can use `<c-o>` to open a project in a new tab, or switch to that project's tab if it's already opened
       - Usecase: Open multiple projects can jump between them
-    4. Or in the telescope picker, you can use `<c-e>` to trigger the hooks but without change the current working directory.
+   4. Or in the telescope picker, you can use `<c-e>` to trigger the hooks but without change the current working directory.
       - Usecase: You just want to open a file in that project in a split window, but don't want to change the current working directory.
 
 ## CONTRIBUTING
