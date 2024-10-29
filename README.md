@@ -13,7 +13,6 @@ This plugin did nothing but provide a simpler way to add, persist and switch to 
 ![HowItWorks](https://github.com/LintaoAmons/cd-project.nvim/assets/95092244/6fa66d86-38c0-4ea8-ad5e-a6ed14c263ef)
 
 ## Install and Config
-> [My config as ref](https://github.com/LintaoAmons/CoolStuffes/blob/main/nvim/.config/nvim/lua/plugins/editor-enhance/project.lua)
 
 - Simple version
 
@@ -59,7 +58,7 @@ return {
           --     })
           --   end,
           -- },
-        } 
+        }
       })
     end,
   }
@@ -88,6 +87,17 @@ you can find the exported Apis at [./lua/cd-project/api.lua](./lua/cd-project/ap
 
 - [ ] Remember the buffer and cursor location while switch to the project
 
+### Workflow
+
+1. Add a project into `cd-project.nvim`: `CdProjectAdd`
+2. switch to the project: `CdProject`
+    1. `<CR>` will go to the project, change current working directory to the project
+    2. `AFTER_CD` hook will be triggered, I use it to open a file in the project by `smart-open`
+    3. Or in the telescope picker, you can use `<c-o>` to open a project in a new tab, or switch to that project's tab if it's already opened
+      - Usecase: Open multiple projects can jump between them
+    4. Or in the telescope picker, you can use `<c-e>` to trigger the hooks but without change the current working directory.
+      - Usecase: You just want to open a file in that project in a split window, but don't want to change the current working directory.
+
 ## CONTRIBUTING
 
 Don't hesitate to ask me anything about the codebase if you want to contribute.
@@ -101,4 +111,3 @@ By [telegram](https://t.me/+ssgpiHyY9580ZWFl) or [微信: CateFat](https://linta
 - [cd-project.nvim](https://github.com/LintaoAmons/cd-project.nvim)
 - [bookmarks.nvim](https://github.com/LintaoAmons/bookmarks.nvim)
 - [context-menu.nvim](https://github.com/LintaoAmons/context-menu.nvim)
-

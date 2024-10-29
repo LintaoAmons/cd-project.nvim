@@ -67,13 +67,28 @@ local cd_project = function(opts)
 
   pickers
     .new(opts, {
-      attach_mappings = function(prompt_bufnr)
+      attach_mappings = function(prompt_bufnr, map)
         actions.select_default:replace(function()
           actions.close(prompt_bufnr)
           ---@type CdProject.Project
           local selected_project = action_state.get_selected_entry().value
           api.cd_project(selected_project.path)
         end)
+
+        map({ "i", "n" }, "<c-o>", function()
+          actions.close(prompt_bufnr)
+          ---@type CdProject.Project
+          local selected_project = action_state.get_selected_entry().value
+          api.cd_project_in_tab(selected_project.path)
+        end)
+
+        map({ "i", "n" }, "<c-e>", function()
+          actions.close(prompt_bufnr)
+          ---@type CdProject.Project
+          local selected_project = action_state.get_selected_entry().value
+          api.cd_project(selected_project.path, { change_dir = false })
+        end)
+
         return true
       end,
       prompt_title = "cd to project",
@@ -106,7 +121,7 @@ local cd_project_in_tab = function(opts)
 
   pickers
     .new(opts, {
-      attach_mappings = function(prompt_bufnr)
+      attach_mappings = function(prompt_bufnr, map)
         actions.select_default:replace(function()
           actions.close(prompt_bufnr)
           ---@type CdProject.Project
