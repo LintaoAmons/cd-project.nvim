@@ -1,5 +1,6 @@
 -- TODO: refator to picker
 
+-- TODO: remove this function and use telescope shortcut
 local function cd_project_in_tab()
   local projects_picker = vim.g.cd_project_config.projects_picker
   if projects_picker == "telescope" then
