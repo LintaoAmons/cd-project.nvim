@@ -6,7 +6,15 @@ local json = require("cd-project.json")
 
 ---@return CdProject.Project[]
 local get_projects = function()
-  return json.read_or_init_json_file(vim.g.cd_project_config.projects_config_filepath)
+  local json = json.read_or_init_json_file(vim.g.cd_project_config.projects_config_filepath)
+
+  -- Filter out projects whose directory does not exit
+  local existing_projects = vim.tbl_filter(function(p)
+    return vim.fn.isdirectory(p.path) == 1
+  end, json)
+
+  return existing_projects
+
 end
 
 ---@param projects CdProject.Project[]
