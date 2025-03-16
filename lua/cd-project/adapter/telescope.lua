@@ -75,6 +75,7 @@ local cd_project = function(opts)
           api.cd_project(selected_project.path)
         end)
 
+        -- tcd: open in new tab
         map({ "i", "n" }, "<c-o>", function()
           actions.close(prompt_bufnr)
           ---@type CdProject.Project
@@ -82,11 +83,12 @@ local cd_project = function(opts)
           api.cd_project_in_tab(selected_project.path)
         end)
 
+        -- lcd: change the pwd for only this window
         map({ "i", "n" }, "<c-e>", function()
           actions.close(prompt_bufnr)
           ---@type CdProject.Project
           local selected_project = action_state.get_selected_entry().value
-          api.cd_project(selected_project.path, { change_dir = false })
+          api.cd_project(selected_project.path, { cd_cmd = "lcd" })
         end)
 
         return true

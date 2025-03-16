@@ -95,7 +95,7 @@ local function cd_project_in_tab(dir)
 end
 
 ---@param dir string
----@param opts? {change_dir: boolean}
+---@param opts? {cd_cmd: "cd" | "tabe | tcd" | "lcd"}
 local function cd_project(dir, opts)
   opts = opts or { change_dir = true }
   vim.g.cd_project_last_project = vim.g.cd_project_current_project
@@ -106,9 +106,8 @@ local function cd_project(dir, opts)
     hook.callback(dir)
   end
 
-  if opts.change_dir then
-    vim.fn.execute("cd " .. vim.fn.fnameescape(dir))
-  end
+  local cd_cmd = opts.cd_cmd or "cd"
+  vim.fn.execute(cd_cmd .. " " .. vim.fn.fnameescape(dir))
 
   local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "AFTER_CD")
   for _, hook in ipairs(hooks) do
