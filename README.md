@@ -28,7 +28,7 @@ return { "LintaoAmons/cd-project.nvim" }
 return {
     "LintaoAmons/cd-project.nvim",
     -- Don't need call the setup function if you think you are good with the default configuration
-    tag = "v0.6.1", -- Optional, You can also use tag to pin the plugin version for stability
+    tag = "v0.10.0", -- Optional, You can also use tag to pin the plugin version for stability
     init = function() -- use init if you want enable auto_register_project, otherwise config is good
       require("cd-project").setup({
         -- this json file is acting like a database to update and read the projects in real time.
@@ -37,7 +37,7 @@ return {
         -- this controls the behaviour of `CdProjectAdd` command about how to get the project directory
         project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
         choice_format = "both", -- optional, you can switch to "name" or "path"
-        projects_picker = "vim-ui", -- optional, you can switch to `telescope`
+        projects_picker = "telescope", -- optional, you can switch to `telescope`
         auto_register_project = false, -- optional, toggle on/off the auto add project behaviour
         -- do whatever you like by hooks
         hooks = {
