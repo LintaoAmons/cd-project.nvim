@@ -20,7 +20,7 @@ This plugin did nothing but provide a simpler way to add, persist and switch to 
 -- using lazy.nvim
 return {
   "LintaoAmons/cd-project.nvim",
-  tag = "v0.10.0", -- Optional, You can use pin to a tag for stability
+  tag = "v0.11.0", -- Optional, You can use pin to a tag for stability
 }
 ```
 
@@ -86,10 +86,13 @@ Don't hesitate to ask me anything about the codebase if you want to contribute.
 
 By [telegram](https://t.me/+ssgpiHyY9580ZWFl) or [微信: CateFat](https://lintao-index.pages.dev/assets/images/wechat-437d6c12efa9f89bab63c7fe07ce1927.png)
 
-## Some Other Neovim Stuff
+## Self-Promotion
 
-- [my neovim config](https://github.com/LintaoAmons/CoolStuffes/tree/main/nvim/.config/nvim)
+- [my website](https://oatnil.top)
+- [my neovim config](https://github.com/LintaoAmons/VimEverywhere/tree/main/nvim)
 - [scratch.nvim](https://github.com/LintaoAmons/scratch.nvim)
 - [cd-project.nvim](https://github.com/LintaoAmons/cd-project.nvim)
 - [bookmarks.nvim](https://github.com/LintaoAmons/bookmarks.nvim)
 - [context-menu.nvim](https://github.com/LintaoAmons/context-menu.nvim)
+
+<a href="https://www.buymeacoffee.com/lintaoamond" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
