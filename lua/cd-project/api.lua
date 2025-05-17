@@ -113,6 +113,16 @@ local function cd_project(dir, opts)
   local cd_cmd = opts.cd_cmd or "cd"
   vim.fn.execute(cd_cmd .. " " .. vim.fn.fnameescape(dir))
 
+  -- Update visited_at timestamp for the project
+  local projects = repo.get_projects()
+  for _, project in ipairs(projects) do
+    if project.path == dir then
+      project.visited_at = os.time()
+      break
+    end
+  end
+  repo.write_projects(projects)
+
   local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "AFTER_CD")
   for _, hook in ipairs(hooks) do
     hook.callback(dir)

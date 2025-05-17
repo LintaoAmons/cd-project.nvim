@@ -59,10 +59,22 @@ local cd_project = function(opts)
   opts = opts or {}
   local projects = repo.get_projects()
   local maxLength = 0
-  for _, project in ipairs(projects) do
+  -- Find the current project
+  local current_project_path = vim.fn.getcwd()
+  local current_project_index = nil
+  for i, project in ipairs(projects) do
     if #project.name > maxLength then
       maxLength = #project.name
     end
+    if project.path == current_project_path then
+      current_project_index = i
+    end
+  end
+
+  -- Move current project to the end of the list
+  if current_project_index then
+    local current_project = table.remove(projects, current_project_index)
+    table.insert(projects, current_project)
   end
 
   pickers
