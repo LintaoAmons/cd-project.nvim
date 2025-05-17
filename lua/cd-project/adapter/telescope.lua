@@ -13,59 +13,52 @@ local action_state = require("telescope.actions.state")
 local repo = require("cd-project.project-repo")
 local api = require("cd-project.api")
 
----@param callback fun(project: CdProject.Project): nil
----@param opts? table
-local function project_picker(callback, opts)
-  opts = opts or {}
-  -- TODO: a format function
-  local projects = repo.get_projects()
-  local maxLength = 0
-  for _, project in ipairs(projects) do
-    if #project.name > maxLength then
-      maxLength = #project.name
-    end
+local M = {}
+
+local function format_entry(project, projects)
+  local max_name = 15 -- minimum width
+  local max_path = 20 -- minimum width
+
+  for _, p in ipairs(projects) do
+    max_name = math.max(max_name, #p.name)
+    local path = vim.fn.pathshorten(p.path)
+    max_path = math.max(max_path, #path)
   end
 
-  pickers
-      .new(opts, {
-        attach_mappings = function(prompt_bufnr)
-          actions.select_default:replace(function()
-            actions.close(prompt_bufnr)
-            ---@type CdProject.Project
-            local selected_project = action_state.get_selected_entry().value
-            callback(selected_project)
-          end)
-          return true
-        end,
-        prompt_title = "[CdProject]",
-        finder = finders.new_table({
-          results = projects,
-          ---@param project CdProject.Project
-          entry_maker = function(project)
-            return {
-              value = project,
-              display = utils.format_entry(project, maxLength),
-              ordinal = project.path,
-            }
-          end,
-        }),
-        sorter = conf.generic_sorter(opts),
-      })
-      :find()
+  -- Apply maximum constraints
+  max_name = math.min(max_name, 30)
+  max_path = math.min(max_path, 40)
+
+  local name = project.name
+  local path = vim.fn.pathshorten(project.path)
+
+  -- Pad or truncate name
+  if #name > max_name then
+    name = name:sub(1, max_name - 2) .. ".."
+  else
+    name = name .. string.rep(" ", max_name - #name)
+  end
+
+  -- Pad or truncate path
+  if #path > max_path then
+    path = path:sub(1, max_path - 2) .. ".."
+  else
+    path = path .. string.rep(" ", max_path - #path)
+  end
+
+  return string.format("%s │ %s", name, path)
 end
 
----@param opts? table
-local cd_project = function(opts)
+---@param callback fun(project: CdProject.Project): nil
+---@param opts? {prompt?: string}
+function M.project_picker(callback, opts)
   opts = opts or {}
   local projects = repo.get_projects()
-  local maxLength = 0
+  
   -- Find the current project
   local current_project_path = vim.fn.getcwd()
   local current_project_index = nil
   for i, project in ipairs(projects) do
-    if #project.name > maxLength then
-      maxLength = #project.name
-    end
     if project.path == current_project_path then
       current_project_index = i
     end
@@ -77,58 +70,84 @@ local cd_project = function(opts)
     table.insert(projects, current_project)
   end
 
-  pickers
-      .new(opts, {
-        attach_mappings = function(prompt_bufnr, map)
-          actions.select_default:replace(function()
-            actions.close(prompt_bufnr)
-            ---@type CdProject.Project
-            local selected_project = action_state.get_selected_entry().value
-            api.cd_project(selected_project.path)
-          end)
+  local function start_picker(project_list)
+    pickers
+        .new(opts, {
+          prompt_title = opts.prompt or "cd to project",
+          finder = finders.new_table({
+            results = project_list,
+            ---@param project CdProject.Project
+            entry_maker = function(project)
+              local display = format_entry(project, project_list)
+              return {
+                value = project,
+                display = display,
+                ordinal = display,
+                filename = project.path,
+              }
+            end,
+          }),
+          sorter = conf.generic_sorter(opts),
+          attach_mappings = function(prompt_bufnr, map)
+            actions.select_default:replace(function()
+              actions.close(prompt_bufnr)
+              local selected = action_state.get_selected_entry()
+              if selected == nil then
+                return
+              end
+              callback(selected.value)
+            end)
 
-          -- tcd: open in new tab
-          map({ "i", "n" }, "<c-t>", function()
-            actions.close(prompt_bufnr)
-            ---@type CdProject.Project
-            local selected_project = action_state.get_selected_entry().value
-            api.cd_project(selected_project.path, { cd_cmd = "tabe | tcd" })
-          end)
-        map({ "i", "n" }, "<c-t>", function()
-          actions.close(prompt_bufnr)
-          ---@type CdProject.Project
-          local selected_project = action_state.get_selected_entry().value
-          api.cd_project_in_tab(selected_project.path)
-        end)
+            -- tcd: open in new tab
+            map({ "i", "n" }, "<c-t>", function()
+              actions.close(prompt_bufnr)
+              local selected = action_state.get_selected_entry()
+              if selected == nil then
+                return
+              end
+              api.cd_project(selected.value.path, { cd_cmd = "tabe | tcd" })
+            end)
 
-          -- lcd: change the pwd for only this window
-          map({ "i", "n" }, "<c-e>", function()
-            actions.close(prompt_bufnr)
-            ---@type CdProject.Project
-            local selected_project = action_state.get_selected_entry().value
-            api.cd_project(selected_project.path, { cd_cmd = "lcd" })
-          end)
+            -- lcd: change the pwd for only this window
+            map({ "i", "n" }, "<c-e>", function()
+              actions.close(prompt_bufnr)
+              local selected = action_state.get_selected_entry()
+              if selected == nil then
+                return
+              end
+              api.cd_project(selected.value.path, { cd_cmd = "lcd" })
+            end)
 
-          return true
-        end,
-        prompt_title = "cd to project",
-        finder = finders.new_table({
-          results = projects,
-          ---@param project CdProject.Project
-          entry_maker = function(project)
-            return {
-              value = project,
-              display = utils.format_entry(project, maxLength),
-              ordinal = project.path,
-            }
+            -- delete project entry
+            map({ "i", "n" }, "<c-d>", function()
+              local selected = action_state.get_selected_entry()
+              if selected == nil then
+                return
+              end
+              api.delete_project(selected.value)
+              actions.close(prompt_bufnr)
+              -- Refresh the picker with updated project list
+              start_picker(repo.get_projects())
+            end)
+
+            return true
           end,
-        }),
-        sorter = conf.generic_sorter(opts),
-      })
-      :find()
+        })
+        :find()
+  end
+
+  start_picker(projects)
 end
 
-local search_and_add = function(opts)
+---@param opts? table
+function M.cd_project(opts)
+  opts = opts or {}
+  M.project_picker(function(project)
+    api.cd_project(project.path)
+  end, opts)
+end
+
+function M.search_and_add(opts)
   opts = opts or {}
 
   local find_command = utils.check_for_find_cmd()
@@ -177,8 +196,4 @@ local search_and_add = function(opts)
   })
 end
 
-return {
-  cd_project = cd_project,
-  search_and_add = search_and_add,
-  project_picker = project_picker,
-}
+return M
