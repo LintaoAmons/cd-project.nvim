@@ -37,57 +37,29 @@ end
 
 -- Restore position for the given project
 function M.restore_position(project_path)
-  vim.print("restore_position: Starting with project_path = " .. project_path)
-  
   if not vim.g.cd_project_config.remember_project_position then
-    vim.print("restore_position: Feature disabled in config, returning")
     return
   end
 
   local projects = repo.get_projects()
-  vim.print("restore_position: Got " .. #projects .. " projects from repo")
-  
   for _, project in ipairs(projects) do
     if project.path == project_path then
-      vim.print("restore_position: Found matching project: " .. project.name)
-      
       if project.last_file then
-        vim.print("restore_position: Last file found: " .. project.last_file)
         local file_path = project.path .. "/" .. project.last_file
-        vim.print("restore_position: Full file path: " .. file_path)
-        
         if vim.fn.filereadable(file_path) == 1 then
-          vim.print("restore_position: File exists, opening it")
           -- Open the file
           vim.cmd("edit " .. vim.fn.fnameescape(file_path))
-          vim.print("restore_position: File opened, current buffer: " .. vim.api.nvim_get_current_buf())
-          
           -- Restore cursor position
           if project.last_position then
-            vim.print("restore_position: Restoring cursor to line " .. 
-                     project.last_position[1] .. ", col " .. project.last_position[2])
             vim.schedule(function()
-              local success, err = pcall(vim.api.nvim_win_set_cursor, 0, project.last_position)
-              if not success then
-                vim.print("restore_position: Failed to set cursor: " .. tostring(err))
-              else
-                vim.print("restore_position: Cursor position restored successfully")
-              end
+              pcall(vim.api.nvim_win_set_cursor, 0, project.last_position)
             end)
-          else
-            vim.print("restore_position: No cursor position saved")
           end
-        else
-          vim.print("restore_position: File doesn't exist: " .. file_path)
         end
-      else
-        vim.print("restore_position: No last file saved for this project")
       end
       break
     end
   end
-  
-  vim.print("restore_position: Completed")
 end
 
 -- Setup autocmds for position tracking
