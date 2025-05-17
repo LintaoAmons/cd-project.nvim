@@ -1,14 +1,3 @@
--- TODO: refator to picker
-
-local function cd_project_in_tab()
-  local projects_picker = vim.g.cd_project_config.projects_picker
-  if projects_picker == "telescope" then
-    return require("cd-project.adapter.telescope").cd_project_in_tab()
-  end
-
-  require("cd-project.adapter.vim-ui").cd_project_in_tab()
-end
-
 local function cd_project()
   local projects_picker = vim.g.cd_project_config.projects_picker
   if projects_picker == "telescope" then
@@ -37,7 +26,6 @@ end
 
 return {
   cd_project = cd_project,
-  cd_project_in_tab = cd_project_in_tab,
   manual_cd_project = manual_cd_project,
   telescope_search_and_add = telescope_search_and_add,
   delete_project = delete_project,

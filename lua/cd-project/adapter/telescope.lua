@@ -27,31 +27,31 @@ local function project_picker(callback, opts)
   end
 
   pickers
-    .new(opts, {
-      attach_mappings = function(prompt_bufnr)
-        actions.select_default:replace(function()
-          actions.close(prompt_bufnr)
-          ---@type CdProject.Project
-          local selected_project = action_state.get_selected_entry().value
-          callback(selected_project)
-        end)
-        return true
-      end,
-      prompt_title = "[CdProject]",
-      finder = finders.new_table({
-        results = projects,
-        ---@param project CdProject.Project
-        entry_maker = function(project)
-          return {
-            value = project,
-            display = utils.format_entry(project, maxLength),
-            ordinal = project.path,
-          }
+      .new(opts, {
+        attach_mappings = function(prompt_bufnr)
+          actions.select_default:replace(function()
+            actions.close(prompt_bufnr)
+            ---@type CdProject.Project
+            local selected_project = action_state.get_selected_entry().value
+            callback(selected_project)
+          end)
+          return true
         end,
-      }),
-      sorter = conf.generic_sorter(opts),
-    })
-    :find()
+        prompt_title = "[CdProject]",
+        finder = finders.new_table({
+          results = projects,
+          ---@param project CdProject.Project
+          entry_maker = function(project)
+            return {
+              value = project,
+              display = utils.format_entry(project, maxLength),
+              ordinal = project.path,
+            }
+          end,
+        }),
+        sorter = conf.generic_sorter(opts),
+      })
+      :find()
 end
 
 ---@param opts? table
@@ -66,85 +66,48 @@ local cd_project = function(opts)
   end
 
   pickers
-    .new(opts, {
-      attach_mappings = function(prompt_bufnr, map)
-        actions.select_default:replace(function()
-          actions.close(prompt_bufnr)
-          ---@type CdProject.Project
-          local selected_project = action_state.get_selected_entry().value
-          api.cd_project(selected_project.path)
-        end)
+      .new(opts, {
+        attach_mappings = function(prompt_bufnr, map)
+          actions.select_default:replace(function()
+            actions.close(prompt_bufnr)
+            ---@type CdProject.Project
+            local selected_project = action_state.get_selected_entry().value
+            api.cd_project(selected_project.path)
+          end)
 
-        map({ "i", "n" }, "<c-o>", function()
-          actions.close(prompt_bufnr)
-          ---@type CdProject.Project
-          local selected_project = action_state.get_selected_entry().value
-          api.cd_project_in_tab(selected_project.path)
-        end)
+          -- tcd: open in new tab
+          map({ "i", "n" }, "<c-t>", function()
+            actions.close(prompt_bufnr)
+            ---@type CdProject.Project
+            local selected_project = action_state.get_selected_entry().value
+            api.cd_project(selected_project.path, { cd_cmd = "tabe | tcd" })
+          end)
 
-        map({ "i", "n" }, "<c-e>", function()
-          actions.close(prompt_bufnr)
-          ---@type CdProject.Project
-          local selected_project = action_state.get_selected_entry().value
-          api.cd_project(selected_project.path, { change_dir = false })
-        end)
+          -- lcd: change the pwd for only this window
+          map({ "i", "n" }, "<c-e>", function()
+            actions.close(prompt_bufnr)
+            ---@type CdProject.Project
+            local selected_project = action_state.get_selected_entry().value
+            api.cd_project(selected_project.path, { cd_cmd = "lcd" })
+          end)
 
-        return true
-      end,
-      prompt_title = "cd to project",
-      finder = finders.new_table({
-        results = projects,
-        ---@param project CdProject.Project
-        entry_maker = function(project)
-          return {
-            value = project,
-            display = utils.format_entry(project, maxLength),
-            ordinal = project.path,
-          }
+          return true
         end,
-      }),
-      sorter = conf.generic_sorter(opts),
-    })
-    :find()
-end
-
----@param opts? table
-local cd_project_in_tab = function(opts)
-  opts = opts or {}
-  local projects = repo.get_projects()
-  local maxLength = 0
-  for _, project in ipairs(projects) do
-    if #project.name > maxLength then
-      maxLength = #project.name
-    end
-  end
-
-  pickers
-    .new(opts, {
-      attach_mappings = function(prompt_bufnr, map)
-        actions.select_default:replace(function()
-          actions.close(prompt_bufnr)
-          ---@type CdProject.Project
-          local selected_project = action_state.get_selected_entry().value
-          api.cd_project_in_tab(selected_project.path)
-        end)
-        return true
-      end,
-      prompt_title = "tcd to project",
-      finder = finders.new_table({
-        results = projects,
-        ---@param project CdProject.Project
-        entry_maker = function(project)
-          return {
-            value = project,
-            display = utils.format_entry(project, maxLength),
-            ordinal = project.path,
-          }
-        end,
-      }),
-      sorter = conf.generic_sorter(opts),
-    })
-    :find()
+        prompt_title = "cd to project",
+        finder = finders.new_table({
+          results = projects,
+          ---@param project CdProject.Project
+          entry_maker = function(project)
+            return {
+              value = project,
+              display = utils.format_entry(project, maxLength),
+              ordinal = project.path,
+            }
+          end,
+        }),
+        sorter = conf.generic_sorter(opts),
+      })
+      :find()
 end
 
 local search_and_add = function(opts)
@@ -160,45 +123,44 @@ local search_and_add = function(opts)
     stdout_buffered = true,
     on_stdout = function(_, data)
       pickers
-        .new(opts, {
-          attach_mappings = function(prompt_bufnr)
-            actions.select_default:replace(function()
-              actions.close(prompt_bufnr)
-              local selected_dir = action_state.get_selected_entry().value
+          .new(opts, {
+            attach_mappings = function(prompt_bufnr)
+              actions.select_default:replace(function()
+                actions.close(prompt_bufnr)
+                local selected_dir = action_state.get_selected_entry().value
 
-              vim.ui.input({ prompt = "Add a project name: " }, function(name)
-                if not name or name == "" then
-                  vim.notify('No name given, using "' .. utils.get_tail_of_path(selected_dir) .. '" instead')
-                  local project = api.build_project_obj(selected_dir)
+                vim.ui.input({ prompt = "Add a project name: " }, function(name)
+                  if not name or name == "" then
+                    vim.notify('No name given, using "' .. utils.get_tail_of_path(selected_dir) .. '" instead')
+                    local project = api.build_project_obj(selected_dir)
+                    if not project then
+                      return
+                    end
+                    return api.add_project(project)
+                  end
+
+                  local project = api.build_project_obj(selected_dir, name)
                   if not project then
                     return
                   end
                   return api.add_project(project)
-                end
-
-                local project = api.build_project_obj(selected_dir, name)
-                if not project then
-                  return
-                end
-                return api.add_project(project)
+                end)
               end)
-            end)
-            return true
-          end,
-          prompt_title = "Select dir to add",
-          finder = finders.new_table({
-            results = data,
-          }),
-          sorter = conf.file_sorter(opts),
-        })
-        :find()
+              return true
+            end,
+            prompt_title = "Select dir to add",
+            finder = finders.new_table({
+              results = data,
+            }),
+            sorter = conf.file_sorter(opts),
+          })
+          :find()
     end,
   })
 end
 
 return {
   cd_project = cd_project,
-  cd_project_in_tab = cd_project_in_tab,
   search_and_add = search_and_add,
   project_picker = project_picker,
 }
