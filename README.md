@@ -14,52 +14,56 @@ This plugin did nothing but provide a simpler way to add, persist and switch to 
 
 ## Install and Config
 
-- Simple version
-
-```lua
--- using lazy.nvim
-return { "LintaoAmons/cd-project.nvim" }
-```
-
-- All config options
+- Work out of box with default config
 
 ```lua
 -- using lazy.nvim
 return {
+  "LintaoAmons/cd-project.nvim",
+  tag = "v0.10.0", -- Optional, You can use pin to a tag for stability
+}
+```
+
+- Or, you want to customise the behaviour
+
+```lua
+---@type CdProject.Config
+local opts = {
+  -- this json file is acting like a database to update and read the projects in real time.
+  -- So because it's just a json file, you can edit directly to add more paths you want manually
+  projects_config_filepath = vim.fs.normalize(vim.fn.stdpath("config") .. "/cd-project.nvim.json"),
+  -- this controls the behaviour of `CdProjectAdd` command about how to get the project directory
+  project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
+  choice_format = "both",        -- optional, you can switch to "name" or "path"
+  projects_picker = "telescope", -- optional, you can switch to `vim-ui`
+  auto_register_project = false, -- optional, toggle on/off the auto add project behaviour
+  -- do whatever you like by hooks
+  hooks = {
+    {
+      callback = function(dir)
+        vim.notify("switched to dir: " .. dir)
+      end,
+    },
+    {
+      callback = function(dir)
+        vim.notify("switched to dir: " .. dir)
+      end,                         -- required, action when trigger the hook
+      name = "cd hint",            -- optional
+      order = 1,                   -- optional, the exection order if there're multiple hooks to be trigger at one point
+      pattern = "cd-project.nvim", -- optional, trigger hook if contains pattern
+      trigger_point = "DISABLE",   -- optional, enum of trigger_points, default to `AFTER_CD`
+      match_rule = function(dir)   -- optional, a function return bool. if have this fields, then pattern will be ignored
+        return true
+      end,
+    },
+  }
+}
+
+return {
     "LintaoAmons/cd-project.nvim",
-    -- Don't need call the setup function if you think you are good with the default configuration
     tag = "v0.10.0", -- Optional, You can also use tag to pin the plugin version for stability
     init = function() -- use init if you want enable auto_register_project, otherwise config is good
-      require("cd-project").setup({
-        -- this json file is acting like a database to update and read the projects in real time.
-        -- So because it's just a json file, you can edit directly to add more paths you want manually
-        projects_config_filepath = vim.fs.normalize(vim.fn.stdpath("config") .. "/cd-project.nvim.json"),
-        -- this controls the behaviour of `CdProjectAdd` command about how to get the project directory
-        project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
-        choice_format = "both", -- optional, you can switch to "name" or "path"
-        projects_picker = "telescope", -- optional, you can switch to `telescope`
-        auto_register_project = false, -- optional, toggle on/off the auto add project behaviour
-        -- do whatever you like by hooks
-        hooks = {
-          -- Run before cd to project, add a bookmark here, then can use `CdProjectBack` to switch back
-          -- {
-          --   trigger_point = "BEFORE_CD",
-          --   callback = function(_)
-          --     vim.print("before cd project")
-          --     require("bookmarks").api.mark({name = "before cd project"})
-          --   end,
-          -- },
-          -- Run after cd to project, find and open a file in the target project by smart-open
-          -- {
-          --   callback = function(_)
-          --     require("telescope").extensions.smart_open.smart_open({
-          --       cwd_only = true,
-          --       filename_first = false,
-          --     })
-          --   end,
-          -- },
-        }
-      })
+      require("cd-project").setup(opts)
     end,
   }
 ```
@@ -71,22 +75,10 @@ return {
 | Command              | Description                                                                 |
 | -------------------- | --------------------------------------------------------------------------- |
 | `CdProject`          | change working directory                                                    |
-| `CdProjectTab`       | change working directory in tab (or you can use `<c-o>` when `CdProject`)   |
 | `CdProjectAdd`       | add current project's directory to the database(json file)                  |
 | `CdProjectBack`      | quickly switch between current project and previous project                 |
 | `CdProjectManualAdd` | Manually add a path and optionally give it a name                           |
 | `CdSearchAndAdd`     | fuzzy find directories in $HOME using telescope and optional give it a name |
-
-### Workflow
-
-1. Add a project into `cd-project.nvim`: `CdProjectAdd`
-2. switch to the project: `CdProject`
-   1. `<CR>` will go to the project, change current working directory to the project
-   2. `AFTER_CD` hook will be triggered, I use it to open a file in the project by `smart-open`
-   3. Or in the telescope picker, you can use `<c-o>` to open a project in a new tab, or switch to that project's tab if it's already opened
-      - Usecase: Open multiple projects can jump between them
-   4. Or in the telescope picker, you can use `<c-e>` to trigger the hooks but without change the current working directory.
-      - Usecase: You just want to open a file in that project in a split window, but don't want to change the current working directory.
 
 ## CONTRIBUTING
 
