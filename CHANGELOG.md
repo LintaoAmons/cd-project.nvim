@@ -5,6 +5,19 @@ All notable changes to the cd-project.nvim plugin will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0] - 2025-05-18
+
+### Added
+- New feature to sort projects in the Telescope picker by last visited time (`visited_at`)
+- Current project is always placed at the bottom of the project list in the picker
+
+### Changed
+- Updated project data structure to include `visited_at` timestamp
+- Enhanced project retrieval to sort by last visited time
+- Modified `cd_project` function to update `visited_at` timestamp on project switch
+- Adjusted Telescope adapter to move the current project to the end of the list
+
+
 ## [0.11.0] - 2025-05-17
 
 ### Added
