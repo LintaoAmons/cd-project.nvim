@@ -5,7 +5,19 @@ All notable changes to the cd-project.nvim plugin will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.11.0] - 2025-05-17
+
+### Added
+- New feature to remember the last position in a project, including the last opened file and cursor position
+- Configuration option `remember_project_position` to toggle this feature (enabled by default)
+- User commands `CdProjectSavePosition` and `CdProjectRestorePosition` for manual control over position tracking
+
+### Changed
+- Updated project data structure to store last file and cursor position
+- Enhanced `cd_project` function to save position before switching and restore position after switching
+
+
+## [0.10.0] - 2025-05-18
 
 ### Added
 - Initial plugin implementation

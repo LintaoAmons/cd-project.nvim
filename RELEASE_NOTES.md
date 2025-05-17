@@ -1,31 +1,21 @@
-# cd-project.nvim v0.10.0 Release Notes
+# cd-project.nvim v0.11.0 Release Notes
 
 ## Major Changes
 
-### Simplified Tab Handling
-- Removed the separate `CdProjectTab` command and consolidated functionality into the main `CdProject` command
-- Changed keybinding for opening in new tab from `<c-o>` to `<c-t>` for better mnemonic association (t for tab)
-- Improved tab detection and switching logic to prevent duplicate tabs of the same project
+### Project Position Tracking
+- Added functionality to remember the last position in a project, including the last opened file and cursor position
+- New configuration option `remember_project_position` to enable/disable this feature (enabled by default)
+- Added user commands for manual control:
+  - `CdProjectSavePosition`: Manually save the current position in the project
+  - `CdProjectRestorePosition`: Manually restore the saved position for the current project
+- Position is automatically saved when leaving a buffer or closing Vim, and restored when switching to a project
 
-### Enhanced Project Navigation
-Added multiple context options for project navigation:
-- Default: Change directory for all windows (`cd`)
-- New tab: Open project in a new tab with `<c-t>` (`tabe | tcd`)
-- Window-local: Change directory only for current window with `<c-e>` (`lcd`)
-
-### Configuration Improvements
-- Moved default configuration to a separate file for better organization
-- Set Telescope as the default project picker
-- Improved documentation with type annotations
-
-### Code Cleanup
-- Removed redundant `cd_project_in_tab` function and related code
-- Fixed inconsistent indentation in telescope adapter
-- Streamlined project directory handling logic
-
-## Upgrading from v0.9.1
-If you were using `CdProjectTab` command or the `<c-o>` keybinding in Telescope, update your workflow:
-- Use `CdProject` and press `<c-t>` instead of the old `CdProjectTab` command
-- The functionality remains the same but is now more consistent and intuitive
+## Upgrading from v0.10.0
+No breaking changes in this release. The new position tracking feature is enabled by default. If you prefer not to use this feature, you can disable it in your configuration:
+```lua
+require("cd-project").setup({
+  remember_project_position = false
+})
+```
 
 For a complete list of changes, see the [CHANGELOG.md](CHANGELOG.md).
