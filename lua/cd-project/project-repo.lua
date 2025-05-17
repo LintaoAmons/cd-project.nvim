@@ -3,6 +3,8 @@ local json = require("cd-project.json")
 ---@field path string
 ---@field name string
 ---@field desc string|nil
+---@field last_file string|nil Path to last opened file (relative to project root)
+---@field last_position number[]|nil Cursor position as [line, col]
 
 ---@return CdProject.Project[]
 local get_projects = function()

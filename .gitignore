@@ -39,3 +39,6 @@ luac.out
 *.x86_64
 *.hex
 
+# Project position data
+.project_positions.json
+

@@ -8,6 +8,7 @@
 ---@field projects_picker? CdProject.Adapter
 ---@field hooks? CdProject.Hook[]
 ---@field format_json? boolean
+---@field remember_project_position? boolean
 
 ---@type CdProject.Config
 local default_config = require("cd-project.default-config")
@@ -26,6 +27,9 @@ M.setup = function(user_config)
   else
     require("cd-project.auto").clear()
   end
+  
+  -- Initialize position tracking
+  require("cd-project.position").setup()
 end
 
 return M

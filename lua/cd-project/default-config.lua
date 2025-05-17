@@ -5,9 +5,11 @@ local opts = {
   projects_config_filepath = vim.fs.normalize(vim.fn.stdpath("config") .. "/cd-project.nvim.json"),
   -- this controls the behaviour of `CdProjectAdd` command about how to get the project directory
   project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
-  choice_format = "both",        -- optional, you can switch to "name" or "path"
-  projects_picker = "telescope", -- optional, you can switch to `vim-ui`
-  auto_register_project = false, -- optional, toggle on/off the auto add project behaviour
+  choice_format = "both",             -- optional, you can switch to "name" or "path"
+  projects_picker = "telescope",      -- optional, you can switch to `vim-ui`
+  auto_register_project = false,      -- optional, toggle on/off the auto add project behaviour
+  remember_project_position = true,   -- optional, toggle on/off remembering last position in projects
+
   -- do whatever you like by hooks
   hooks = {
     {

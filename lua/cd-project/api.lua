@@ -1,6 +1,7 @@
 local cd_hooks = require("cd-project.hooks")
 local repo = require("cd-project.project-repo")
 local utils = require("cd-project.utils")
+local position = require("cd-project.position")
 
 ---@return string|nil
 local function find_project_dir()
@@ -83,10 +84,15 @@ local function handle_existing_tab(tabpage)
   return true
 end
 
+
 ---@param dir string
 ---@param opts? {cd_cmd: "cd" | "tabe | tcd" | "lcd"}
 local function cd_project(dir, opts)
   opts = opts or { cd_cmd = "cd" }
+  
+  -- Save position of current project before switching
+  position.save_current_position()
+  
   vim.g.cd_project_last_project = vim.g.cd_project_current_project
   vim.g.cd_project_current_project = dir
 
@@ -111,6 +117,9 @@ local function cd_project(dir, opts)
   for _, hook in ipairs(hooks) do
     hook.callback(dir)
   end
+  
+  -- Restore position for the new project
+  position.restore_position(dir)
 end
 
 ---@param path string
