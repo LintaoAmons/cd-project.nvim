@@ -153,6 +153,24 @@ function M.project_picker(callback, opts)
               start_picker(get_entries())
             end)
 
+            map({ "i", "n" }, "<c-r>", function()
+              local selected = action_state.get_selected_entry()
+              if selected == nil then
+                return
+              end
+              vim.ui.input({ prompt = "Rename project to: ", default = selected.value.name }, function(new_name)
+                if new_name and new_name ~= "" then
+                  local project = selected.value
+                  project.name = new_name
+                  project.visited_at = os.time() -- Update the timestamp to reflect the rename action
+                  api.update_project(project.id, project)
+                  actions.close(prompt_bufnr)
+                  -- Refresh the picker with updated project list
+                  start_picker(get_entries())
+                end
+              end)
+            end)
+
             return true
           end,
         })

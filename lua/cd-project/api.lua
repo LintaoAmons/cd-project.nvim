@@ -170,6 +170,28 @@ local function add_project(project, opts)
   vim.notify("Project added: \n" .. project.path, vim.log.levels.INFO, { title = "cd-project.nvim" })
 end
 
+---@param project_id string
+---@param updated_project CdProject.Project
+local function update_project(project_id, updated_project)
+  local projects = repo.get_projects()
+  local found = false
+
+  for i, p in ipairs(projects) do
+    if p.id == project_id then
+      projects[i] = updated_project
+      found = true
+      break
+    end
+  end
+
+  if found then
+    repo.write_projects(projects)
+    vim.notify("Project updated: \n" .. updated_project.name, vim.log.levels.INFO, { title = "cd-project.nvim" })
+  else
+    vim.notify("Project not found with ID: " .. project_id, vim.log.levels.WARN, { title = "cd-project.nvim" })
+  end
+end
+
 ---@param project CdProject.Project
 local function delete_project(project)
   local projects = repo.get_projects()
@@ -214,6 +236,7 @@ return {
   get_project_names = get_project_names,
   add_current_project = add_current_project,
   add_project = add_project,
+  update_project = update_project,
   delete_project = delete_project,
   back = back,
   find_project_dir = find_project_dir,
