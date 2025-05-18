@@ -105,7 +105,7 @@ local function cd_project(dir, opts)
     end
   end
 
-  local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "BEFORE_CD")
+  local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "BEFORE_CD", opts.cd_cmd)
   for _, hook in ipairs(hooks) do
     hook.callback(dir)
   end
@@ -123,13 +123,14 @@ local function cd_project(dir, opts)
   end
   repo.write_projects(projects)
 
-  local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "AFTER_CD")
+  -- Restore position for the new project
+  position.restore_position(dir)
+
+  local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "AFTER_CD", opts.cd_cmd)
   for _, hook in ipairs(hooks) do
     hook.callback(dir)
   end
   
-  -- Restore position for the new project
-  position.restore_position(dir)
 end
 
 ---@param path string
