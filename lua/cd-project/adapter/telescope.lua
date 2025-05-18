@@ -53,7 +53,6 @@ end
 local function get_entries()
   local projects = repo.get_projects()
 
-  -- Find the current project
   local current_project_path = vim.fn.getcwd()
   local current_project_index = nil
   for i, project in ipairs(projects) do
@@ -62,7 +61,6 @@ local function get_entries()
     end
   end
 
-  -- Move current project to the end of the list
   if current_project_index then
     local current_project = table.remove(projects, current_project_index)
     table.insert(projects, current_project)
@@ -135,7 +133,6 @@ function M.project_picker(callback, opts)
               api.cd_project(selected.value.path, { cd_cmd = "lcd" })
             end)
 
-            -- lcd: change the pwd for only this window
             map({ "i", "n" }, "<c-e>", function()
               actions.close(prompt_bufnr)
               local selected = action_state.get_selected_entry()
@@ -145,7 +142,6 @@ function M.project_picker(callback, opts)
               api.cd_project(selected.value.path, { cd_cmd = "lcd" })
             end)
 
-            -- delete project entry
             map({ "i", "n" }, "<c-d>", function()
               local selected = action_state.get_selected_entry()
               if selected == nil then
