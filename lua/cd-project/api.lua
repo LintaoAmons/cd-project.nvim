@@ -144,6 +144,7 @@ local function build_project_obj(path, name, desc)
   end
 
   return {
+    id = vim.fn.strftime("%Y%m%d%H%M%S") .. "_" .. math.random(1000, 9999), -- Unique ID based on timestamp and random number
     path = normalized_path,
     name = name or utils.get_tail_of_path(normalized_path),
     desc = desc,
@@ -174,7 +175,7 @@ local function delete_project(project)
   local projects = repo.get_projects()
 
   local new_projects = vim.tbl_filter(function(p)
-    return p.name ~= project.name
+    return p.id ~= project.id
   end, projects)
   repo.write_projects(new_projects)
   vim.notify("Project deleted: \n" .. project.name, vim.log.levels.INFO, { title = "cd-project.nvim" })

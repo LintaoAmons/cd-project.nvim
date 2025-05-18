@@ -1,5 +1,6 @@
 local json = require("cd-project.json")
 ---@class CdProject.Project
+---@field id string Unique identifier for the project
 ---@field path string
 ---@field name string
 ---@field desc string|nil
