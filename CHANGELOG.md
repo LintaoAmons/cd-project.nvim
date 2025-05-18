@@ -5,7 +5,7 @@ All notable changes to the cd-project.nvim plugin will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.12.1] - 2025-05-18
+## [1.0.0] - 2025-05-20
 
 ### Added
 - Refactored Telescope adapter to follow a modular pattern similar to bookmarks.nvim with a `format_entry` method
@@ -15,8 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced hooks system to filter by `cd_cmd` type
 
 ### Changed
-- Updated project data structure to include a unique `id` field
-- Modified project deletion logic to use unique IDs instead of names
+- **Breaking Change**: Updated project data structure to include a mandatory unique `id` field. Existing projects without an ID will be automatically assigned one, but custom scripts or tools relying on the old structure may need updates.
+- Modified project deletion logic to use unique IDs instead of names for improved accuracy
 - Improved `cd_project` function to pass `cd_cmd` to hooks for better customization
 - Reordered execution in `cd_project` to restore position before executing AFTER_CD hooks
 - Removed debug print statements from `position.lua` for cleaner operation
