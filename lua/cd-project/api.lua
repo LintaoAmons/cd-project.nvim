@@ -130,7 +130,6 @@ local function cd_project(dir, opts)
   for _, hook in ipairs(hooks) do
     hook.callback(dir)
   end
-  
 end
 
 ---@param path string
@@ -157,12 +156,13 @@ local function add_project(project, opts)
   local projects = repo.get_projects()
   opts = opts or { show_duplicate_hints = true }
 
-  if vim.tbl_contains(get_project_paths(), project.path) then
-    if opts.show_duplicate_hints then
-      vim.notify("Project already exists: " .. project.path, vim.log.levels.INFO, { title = "cd-project.nvim" })
+  for _, p in ipairs(projects) do
+    if p.path == project.path then
+      if opts.show_duplicate_hints then
+        vim.notify("Project already exists: " .. project.path, vim.log.levels.INFO, { title = "cd-project.nvim" })
+      end
+      return
     end
-
-    return
   end
 
   table.insert(projects, project)

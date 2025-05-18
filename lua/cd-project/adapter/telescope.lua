@@ -49,10 +49,8 @@ local function format_entry(project, projects)
   return string.format("%s │ %s", name, path)
 end
 
----@param callback fun(project: CdProject.Project): nil
----@param opts? {prompt?: string}
-function M.project_picker(callback, opts)
-  opts = opts or {}
+---@return CdProject.Project[]
+local function get_entries()
   local projects = repo.get_projects()
 
   -- Find the current project
@@ -69,6 +67,15 @@ function M.project_picker(callback, opts)
     local current_project = table.remove(projects, current_project_index)
     table.insert(projects, current_project)
   end
+  return projects
+end
+
+---@param callback fun(project: CdProject.Project): nil
+---@param opts? {prompt?: string}
+function M.project_picker(callback, opts)
+  opts = opts or {}
+
+  local projects = get_entries()
 
   local function start_picker(project_list)
     pickers
@@ -147,7 +154,7 @@ function M.project_picker(callback, opts)
               api.delete_project(selected.value)
               actions.close(prompt_bufnr)
               -- Refresh the picker with updated project list
-              start_picker(repo.get_projects())
+              start_picker(get_entries())
             end)
 
             return true
