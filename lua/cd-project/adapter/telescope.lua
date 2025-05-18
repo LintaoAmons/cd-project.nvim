@@ -54,7 +54,7 @@ end
 function M.project_picker(callback, opts)
   opts = opts or {}
   local projects = repo.get_projects()
-  
+
   -- Find the current project
   local current_project_path = vim.fn.getcwd()
   local current_project_index = nil
@@ -106,6 +106,26 @@ function M.project_picker(callback, opts)
                 return
               end
               api.cd_project(selected.value.path, { cd_cmd = "tabe | tcd" })
+            end)
+
+            actions.select_horizontal:replace(function()
+              actions.close(prompt_bufnr)
+              local selected = action_state.get_selected_entry()
+              if selected == nil then
+                return
+              end
+              vim.cmd [[ split ]]
+              api.cd_project(selected.value.path, { cd_cmd = "lcd" })
+            end)
+
+            actions.select_vertical:replace(function()
+              actions.close(prompt_bufnr)
+              local selected = action_state.get_selected_entry()
+              if selected == nil then
+                return
+              end
+              vim.cmd [[ vsplit ]]
+              api.cd_project(selected.value.path, { cd_cmd = "lcd" })
             end)
 
             -- lcd: change the pwd for only this window
