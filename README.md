@@ -80,6 +80,16 @@ return {
 | `CdProjectManualAdd` | Manually add a path and optionally give it a name                           |
 | `CdSearchAndAdd`     | fuzzy find directories in $HOME using telescope and optional give it a name |
 
+## Default Picker Keymaps
+
+| Map     | Action                               |
+| ------- | ------------------------------------ |
+| `<cr>`  | `cd` into project                    |
+| `<c-t>` | `tcd` into project (open in new tab) |
+| `<c-e>` | `lcd` into project (open in window)  |
+| `<c-d>` | Delete project                       |
+| `<c-r>` | Rename project                       |
+
 ## CONTRIBUTING
 
 Don't hesitate to ask me anything about the codebase if you want to contribute.

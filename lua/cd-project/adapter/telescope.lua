@@ -111,7 +111,7 @@ function M.project_picker(callback, opts)
                 return
               end
               api.cd_project(selected.value.path, { cd_cmd = "tabe | tcd" })
-            end)
+            end, { desc = "Open in new tab" })
 
             actions.select_horizontal:replace(function()
               actions.close(prompt_bufnr)
@@ -140,7 +140,7 @@ function M.project_picker(callback, opts)
                 return
               end
               api.cd_project(selected.value.path, { cd_cmd = "lcd" })
-            end)
+            end, { desc = "Open in current window" })
 
             map({ "i", "n" }, "<c-d>", function()
               local selected = action_state.get_selected_entry()
@@ -151,7 +151,7 @@ function M.project_picker(callback, opts)
               actions.close(prompt_bufnr)
               -- Refresh the picker with updated project list
               start_picker(get_entries())
-            end)
+            end, { desc = "Remove project" })
 
             map({ "i", "n" }, "<c-r>", function()
               local selected = action_state.get_selected_entry()
@@ -169,7 +169,7 @@ function M.project_picker(callback, opts)
                   start_picker(get_entries())
                 end
               end)
-            end)
+            end, { desc = "Rename project" })
 
             return true
           end,

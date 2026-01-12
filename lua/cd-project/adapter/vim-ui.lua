@@ -53,7 +53,7 @@ local function cd_project_in_tab(opts)
 end
 
 local function manual_cd_project()
-  vim.ui.input({ prompt = "Add a project path: " }, function(path)
+  vim.ui.input({ prompt = "Add a project path: ", completion = "dir" }, function(path)
     if not path or path == "" then
       return utils.log_error("No path given, quitting.")
     end

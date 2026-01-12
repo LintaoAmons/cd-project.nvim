@@ -111,7 +111,8 @@ local function cd_project(dir, opts)
   end
 
   local cd_cmd = opts.cd_cmd or "cd"
-  vim.fn.execute(cd_cmd .. " " .. vim.fn.fnameescape(dir))
+  local full_command = cd_cmd .. " " .. vim.fn.fnameescape(dir)
+  vim.fn.execute(full_command)
 
   -- Update visited_at timestamp for the project
   local projects = repo.get_projects()
@@ -125,6 +126,9 @@ local function cd_project(dir, opts)
 
   -- Restore position for the new project
   position.restore_position(dir)
+
+  -- This will make the displayed names of the restored file appear relative to the root directory
+  vim.fn.execute(full_command)
 
   local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "AFTER_CD", opts.cd_cmd)
   for _, hook in ipairs(hooks) do
