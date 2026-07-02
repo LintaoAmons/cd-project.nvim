@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - New `snacks` picker adapter (`projects_picker = "snacks"`) built on [snacks.nvim](https://github.com/folke/snacks.nvim), with the same keymaps as the Telescope picker: `<cr>` cd, `<c-t>` tab, `<c-e>` window, `<c-d>` delete, `<c-r>` rename (delete/rename refresh the picker in place)
 - `CdProjectSearchAndAdd` and `CdProjectDelete` now respect `projects_picker` instead of always using Telescope
+- `CdProject <name>` jumps directly to a project by name (with tab-completion), skipping the picker; duplicate names resolve to the most recently visited
+- `CdProjectAdd [name]` accepts an optional project name
+- `CdProjectPrune[!]` removes projects whose directory no longer exists from the database, with a confirmation listing what will be removed (`!` skips it)
 
 ### Changed
 - Extracted shared picker helpers (entry sorting, column formatting) into `cd-project.adapter.common`, used by both the Telescope and snacks adapters

@@ -75,12 +75,19 @@ return {
 
 | Command                 | Description                                                                            |
 | ----------------------- | -------------------------------------------------------------------------------------- |
-| `CdProject`             | change working directory                                                               |
-| `CdProjectAdd`          | add current project's directory to the database(json file)                             |
+| `CdProject [name]`      | change working directory; with a name (tab-completed), jump directly without the picker |
+| `CdProjectAdd [name]`   | add current project's directory to the database(json file), optionally with a name     |
 | `CdProjectBack`         | quickly switch between current project and previous project                            |
 | `CdProjectManualAdd`    | Manually add a path and optionally give it a name                                      |
 | `CdProjectSearchAndAdd` | fuzzy find directories in $HOME using the configured picker and optionally give it a name |
 | `CdProjectDelete`       | pick a project to delete from the database                                             |
+| `CdProjectPrune[!]`     | remove projects whose directory no longer exists (`!` skips the confirmation)          |
+
+Since `CdProject` takes a name, you can map keys to your most used projects:
+
+```lua
+vim.keymap.set("n", "<leader>pn", "<cmd>CdProject my-notes<cr>")
+```
 
 ## Pickers
 

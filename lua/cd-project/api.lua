@@ -207,22 +207,70 @@ local function delete_project(project)
   vim.notify("Project deleted: \n" .. project.name, vim.log.levels.INFO, { title = "cd-project.nvim" })
 end
 
----@param opts? {show_duplicate_hints: boolean}
+---@param opts? {show_duplicate_hints?: boolean, name?: string}
 local function add_current_project(opts)
   local project_dir = find_project_dir()
   opts = opts or { show_duplicate_hints = true }
 
   if not project_dir then
-    return utils.log_err("Can't find project path of current file")
+    return utils.log_error("Can't find project path of current file")
   end
 
-  local project = build_project_obj(project_dir)
+  local project = build_project_obj(project_dir, opts.name)
 
   if not project then
     return
   end
 
   add_project(project, opts)
+end
+
+-- cd to the project with the given name; duplicate names resolve to the most recently visited
+---@param name string
+local function cd_project_by_name(name)
+  local projects = repo.get_projects()
+  for _, project in ipairs(projects) do
+    if project.name == name then
+      return cd_project(project.path)
+    end
+  end
+  utils.log_error("No project found with name: " .. name)
+end
+
+-- Remove projects whose directory no longer exists from the database
+---@param opts? {force?: boolean} skip the confirmation prompt when force is true
+local function prune_projects(opts)
+  opts = opts or {}
+  local projects = repo.get_projects({ all = true })
+
+  local missing = vim.tbl_filter(function(p)
+    return vim.fn.isdirectory(p.path) == 0
+  end, projects)
+
+  if #missing == 0 then
+    return vim.notify("No projects with missing directories.", vim.log.levels.INFO, { title = "cd-project.nvim" })
+  end
+
+  if not opts.force then
+    local lines = {}
+    for _, p in ipairs(missing) do
+      table.insert(lines, "- " .. p.name .. " (" .. p.path .. ")")
+    end
+    local choice = vim.fn.confirm(
+      "Remove " .. #missing .. " project(s) with missing directories?\n" .. table.concat(lines, "\n"),
+      "&Yes\n&No",
+      2
+    )
+    if choice ~= 1 then
+      return
+    end
+  end
+
+  local kept = vim.tbl_filter(function(p)
+    return vim.fn.isdirectory(p.path) == 1
+  end, projects)
+  repo.write_projects(kept)
+  vim.notify("Pruned " .. #missing .. " project(s)", vim.log.levels.INFO, { title = "cd-project.nvim" })
 end
 
 local function back()
@@ -235,6 +283,7 @@ end
 
 return {
   cd_project = cd_project,
+  cd_project_by_name = cd_project_by_name,
   build_project_obj = build_project_obj,
   get_project_paths = get_project_paths,
   get_project_names = get_project_names,
@@ -242,6 +291,7 @@ return {
   add_project = add_project,
   update_project = update_project,
   delete_project = delete_project,
+  prune_projects = prune_projects,
   back = back,
   find_project_dir = find_project_dir,
 }
