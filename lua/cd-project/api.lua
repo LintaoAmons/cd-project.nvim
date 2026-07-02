@@ -273,6 +273,67 @@ local function prune_projects(opts)
   vim.notify("Pruned " .. #missing .. " project(s)", vim.log.levels.INFO, { title = "cd-project.nvim" })
 end
 
+-- Find all git repositories under `dir` and add them as projects
+---@param opts? {dir?: string, max_depth?: integer}
+local function scan_projects(opts)
+  opts = opts or {}
+  local dir = vim.fn.expand(opts.dir or vim.fn.getcwd())
+  local max_depth = opts.max_depth or 5
+
+  if vim.fn.isdirectory(dir) == 0 then
+    return utils.log_error(dir .. " is not a directory")
+  end
+
+  -- no type filter: .git is a directory in normal repos but a file in worktrees/submodules
+  local cmd
+  if vim.fn.executable("fd") == 1 then
+    cmd = { "fd", "-H", "--max-depth", tostring(max_depth), "^\\.git$", dir }
+  elseif vim.fn.executable("fdfind") == 1 then
+    cmd = { "fdfind", "-H", "--max-depth", tostring(max_depth), "^\\.git$", dir }
+  elseif vim.fn.executable("find") == 1 then
+    -- -prune keeps find from descending into the .git directories themselves
+    cmd = { "find", dir, "-maxdepth", tostring(max_depth), "-name", ".git", "-prune" }
+  else
+    return utils.log_error("You need to install fd or find.")
+  end
+
+  vim.system(cmd, { text = true }, function(result)
+    vim.schedule(function()
+      if result.code ~= 0 and (result.stdout == nil or result.stdout == "") then
+        return utils.log_error("Scan failed: " .. (result.stderr or "unknown error"))
+      end
+
+      local projects = repo.get_projects({ all = true })
+      local known = {}
+      for _, p in ipairs(projects) do
+        known[utils.remove_trailing_slash(p.path)] = true
+      end
+
+      local added = 0
+      for _, git_dir in ipairs(vim.split(result.stdout or "", "\n", { trimempty = true })) do
+        local project_dir = utils.remove_trailing_slash(vim.fs.dirname(utils.remove_trailing_slash(git_dir)))
+        if not known[project_dir] then
+          local project = build_project_obj(project_dir)
+          if project then
+            known[project_dir] = true
+            table.insert(projects, project)
+            added = added + 1
+          end
+        end
+      end
+
+      if added > 0 then
+        repo.write_projects(projects)
+      end
+      vim.notify(
+        "Scan of " .. dir .. " done: " .. added .. " project(s) added",
+        vim.log.levels.INFO,
+        { title = "cd-project.nvim" }
+      )
+    end)
+  end)
+end
+
 local function back()
   local last_project = vim.g.cd_project_last_project
   if not last_project then
@@ -292,6 +353,7 @@ return {
   update_project = update_project,
   delete_project = delete_project,
   prune_projects = prune_projects,
+  scan_projects = scan_projects,
   back = back,
   find_project_dir = find_project_dir,
 }

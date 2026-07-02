@@ -82,6 +82,7 @@ return {
 | `CdProjectSearchAndAdd` | fuzzy find directories in $HOME using the configured picker and optionally give it a name |
 | `CdProjectDelete`       | pick a project to delete from the database                                             |
 | `CdProjectPrune[!]`     | remove projects whose directory no longer exists (`!` skips the confirmation)          |
+| `CdProjectScan [dir]`   | add every git repo found under `dir` (default: cwd) to the database                    |
 
 Since `CdProject` takes a name, you can map keys to your most used projects:
 

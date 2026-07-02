@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `CdProject <name>` jumps directly to a project by name (with tab-completion), skipping the picker; duplicate names resolve to the most recently visited
 - `CdProjectAdd [name]` accepts an optional project name
 - `CdProjectPrune[!]` removes projects whose directory no longer exists from the database, with a confirmation listing what will be removed (`!` skips it)
+- `CdProjectScan [dir]` scans for git repositories (including worktrees/submodule checkouts) under the given directory — cwd by default, up to 5 levels deep — and adds them all as projects; `require("cd-project.api").scan_projects({ dir = ..., max_depth = ... })` for custom depth
 
 ### Changed
 - Extracted shared picker helpers (entry sorting, column formatting) into `cd-project.adapter.common`, used by both the Telescope and snacks adapters
