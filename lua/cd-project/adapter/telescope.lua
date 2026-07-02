@@ -156,24 +156,11 @@ function M.search_and_add(opts)
             attach_mappings = function(prompt_bufnr)
               actions.select_default:replace(function()
                 actions.close(prompt_bufnr)
-                local selected_dir = action_state.get_selected_entry().value
-
-                vim.ui.input({ prompt = "Add a project name: " }, function(name)
-                  if not name or name == "" then
-                    vim.notify('No name given, using "' .. utils.get_tail_of_path(selected_dir) .. '" instead')
-                    local project = api.build_project_obj(selected_dir)
-                    if not project then
-                      return
-                    end
-                    return api.add_project(project)
-                  end
-
-                  local project = api.build_project_obj(selected_dir, name)
-                  if not project then
-                    return
-                  end
-                  return api.add_project(project)
-                end)
+                local selected = action_state.get_selected_entry()
+                if selected == nil then
+                  return
+                end
+                common.prompt_name_and_add(selected.value)
               end)
               return true
             end,

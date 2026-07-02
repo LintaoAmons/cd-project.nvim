@@ -20,8 +20,15 @@ vim.g.cd_project_config = default_config
 
 ---@param user_config? CdProject.Config
 M.setup = function(user_config)
+  user_config = user_config or {}
   local previous_config = vim.g.cd_project_config or default_config
-  vim.g.cd_project_config = vim.tbl_deep_extend("force", previous_config, user_config or {}) or default_config
+  local merged = vim.tbl_deep_extend("force", previous_config, user_config)
+  -- hooks is a list: replace it wholesale instead of deep-merging by index,
+  -- otherwise user hooks get mixed with leftover default hooks
+  if user_config.hooks then
+    merged.hooks = user_config.hooks
+  end
+  vim.g.cd_project_config = merged
   if vim.g.cd_project_config.auto_register_project then
     require("cd-project.auto").setup()
   else

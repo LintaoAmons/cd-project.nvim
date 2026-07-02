@@ -1,5 +1,6 @@
 local M = {}
 local repo = require("cd-project.project-repo")
+local utils = require("cd-project.utils")
 
 -- Save current position for the current project
 function M.save_current_position()
@@ -18,21 +19,28 @@ function M.save_current_position()
     return
   end
 
-  -- Make path relative to project root
-  local relative_path = vim.fn.fnamemodify(current_file, ":.")
+  -- Make path relative to the project root; files outside the project are not remembered
+  local project_root = utils.remove_trailing_slash(current_project_path)
+  if not vim.startswith(current_file, project_root .. "/") then
+    return
+  end
+  local relative_path = current_file:sub(#project_root + 2)
   local cursor_pos = vim.api.nvim_win_get_cursor(0)
 
   -- Update project data
-  local projects = repo.get_projects()
-  for i, project in ipairs(projects) do
+  local projects = repo.get_projects({ all = true })
+  for _, project in ipairs(projects) do
     if project.path == current_project_path then
-      projects[i].last_file = relative_path
-      projects[i].last_position = cursor_pos
-      break
+      -- This runs on every BufLeave; only rewrite the json file when the position changed
+      if project.last_file == relative_path and vim.deep_equal(project.last_position, cursor_pos) then
+        return
+      end
+      project.last_file = relative_path
+      project.last_position = cursor_pos
+      repo.write_projects(projects)
+      return
     end
   end
-  
-  repo.write_projects(projects)
 end
 
 -- Restore position for the given project
@@ -47,10 +55,10 @@ function M.restore_position(project_path)
       if project.last_file then
         local file_path = project.path .. "/" .. project.last_file
         if vim.fn.filereadable(file_path) == 1 then
-          -- Open the file
-          vim.cmd("edit " .. vim.fn.fnameescape(file_path))
+          -- Open the file; pcall so e.g. an unsaved buffer (E37) doesn't abort the cd
+          local ok = pcall(vim.cmd, "edit " .. vim.fn.fnameescape(file_path))
           -- Restore cursor position
-          if project.last_position then
+          if ok and project.last_position then
             vim.schedule(function()
               pcall(vim.api.nvim_win_set_cursor, 0, project.last_position)
             end)

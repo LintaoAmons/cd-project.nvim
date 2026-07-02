@@ -1,6 +1,25 @@
 local repo = require("cd-project.project-repo")
+local api = require("cd-project.api")
+local utils = require("cd-project.utils")
 
 local M = {}
+
+-- Ask for a name (fall back to the directory tail) and add `dir` as a project.
+---@param dir string
+function M.prompt_name_and_add(dir)
+  vim.ui.input({ prompt = "Add a project name: " }, function(name)
+    if not name or name == "" then
+      name = nil
+      vim.notify('No name given, using "' .. utils.get_tail_of_path(dir) .. '" instead')
+    end
+
+    local project = api.build_project_obj(dir, name)
+    if not project then
+      return
+    end
+    api.add_project(project)
+  end)
+end
 
 -- Projects sorted by the repo (last visited first), with the current
 -- project moved to the end of the list.

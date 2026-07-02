@@ -155,24 +155,7 @@ function M.search_and_add(opts)
           if item == nil then
             return
           end
-          local selected_dir = item.text
-
-          vim.ui.input({ prompt = "Add a project name: " }, function(name)
-            if not name or name == "" then
-              vim.notify('No name given, using "' .. utils.get_tail_of_path(selected_dir) .. '" instead')
-              local project = api.build_project_obj(selected_dir)
-              if not project then
-                return
-              end
-              return api.add_project(project)
-            end
-
-            local project = api.build_project_obj(selected_dir, name)
-            if not project then
-              return
-            end
-            return api.add_project(project)
-          end)
+          common.prompt_name_and_add(item.text)
         end,
       })
     end,

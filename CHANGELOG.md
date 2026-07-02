@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - `CdProjectBack` no longer errors when there is no previous project to go back to
 - Removed leftover `cd_project_in_tab` in the vim-ui adapter that called a deleted API function and would always error
+- Projects whose directory is temporarily missing (e.g. an unmounted drive) are no longer permanently dropped from the json file by add/delete/rename/cd — they are only hidden from the picker while missing
+- `format_json = false` is now respected (jq formatting used to run whenever jq was installed); a jq failure now falls back to unformatted output instead of erroring
+- A corrupted projects json file no longer crashes the plugin (warns and starts with an empty list, leaving the file untouched)
+- `setup()` no longer deep-merges the `hooks` list by index: user hooks fully replace the default hooks instead of mixing with them
+- Remembered positions are stored relative to the project root instead of the current working directory; files outside the project are no longer remembered
+- Position tracking no longer rewrites the json file (and spawns jq) on every `BufLeave` when nothing changed
+- Restoring a position no longer aborts the cd when the current buffer has unsaved changes
 
 ## [1.0.0] - 2025-05-20
 

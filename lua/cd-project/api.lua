@@ -115,7 +115,7 @@ local function cd_project(dir, opts)
   vim.fn.execute(full_command)
 
   -- Update visited_at timestamp for the project
-  local projects = repo.get_projects()
+  local projects = repo.get_projects({ all = true })
   for _, project in ipairs(projects) do
     if project.path == dir then
       project.visited_at = os.time()
@@ -130,7 +130,7 @@ local function cd_project(dir, opts)
   -- This will make the displayed names of the restored file appear relative to the root directory
   vim.fn.execute(full_command)
 
-  local hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "AFTER_CD", opts.cd_cmd)
+  hooks = cd_hooks.get_hooks(vim.g.cd_project_config.hooks, dir, "AFTER_CD", opts.cd_cmd)
   for _, hook in ipairs(hooks) do
     hook.callback(dir)
   end
@@ -157,7 +157,7 @@ end
 ---@param project CdProject.Project
 ---@param opts? {show_duplicate_hints: boolean}
 local function add_project(project, opts)
-  local projects = repo.get_projects()
+  local projects = repo.get_projects({ all = true })
   opts = opts or { show_duplicate_hints = true }
 
   for _, p in ipairs(projects) do
@@ -177,7 +177,7 @@ end
 ---@param project_id string
 ---@param updated_project CdProject.Project
 local function update_project(project_id, updated_project)
-  local projects = repo.get_projects()
+  local projects = repo.get_projects({ all = true })
   local found = false
 
   for i, p in ipairs(projects) do
@@ -198,7 +198,7 @@ end
 
 ---@param project CdProject.Project
 local function delete_project(project)
-  local projects = repo.get_projects()
+  local projects = repo.get_projects({ all = true })
 
   local new_projects = vim.tbl_filter(function(p)
     return p.id ~= project.id
