@@ -34,9 +34,10 @@ local opts = {
   projects_config_filepath = vim.fs.normalize(vim.fn.stdpath("config") .. "/cd-project.nvim.json"),
   -- this controls the behaviour of `CdProjectAdd` command about how to get the project directory
   project_dir_pattern = { ".git", ".gitignore", "Cargo.toml", "package.json", "go.mod" },
-  choice_format = "both",        -- optional, you can switch to "name" or "path"
-  projects_picker = "telescope", -- optional, you can switch to `vim-ui`
-  auto_register_project = false, -- optional, toggle on/off the auto add project behaviour
+  choice_format = "both",           -- optional, you can switch to "name" or "path"
+  projects_picker = "telescope",    -- optional, you can switch to `vim-ui` or `snacks`
+  auto_register_project = false,    -- optional, toggle on/off the auto add project behaviour
+  remember_project_position = true, -- optional, toggle on/off remembering last position in projects
   -- do whatever you like by hooks
   hooks = {
     {
@@ -72,15 +73,28 @@ return {
 
 ## Commands and Workflow
 
-| Command              | Description                                                                 |
-| -------------------- | --------------------------------------------------------------------------- |
-| `CdProject`          | change working directory                                                    |
-| `CdProjectAdd`       | add current project's directory to the database(json file)                  |
-| `CdProjectBack`      | quickly switch between current project and previous project                 |
-| `CdProjectManualAdd` | Manually add a path and optionally give it a name                           |
-| `CdSearchAndAdd`     | fuzzy find directories in $HOME using telescope and optional give it a name |
+| Command                 | Description                                                                            |
+| ----------------------- | -------------------------------------------------------------------------------------- |
+| `CdProject`             | change working directory                                                               |
+| `CdProjectAdd`          | add current project's directory to the database(json file)                             |
+| `CdProjectBack`         | quickly switch between current project and previous project                            |
+| `CdProjectManualAdd`    | Manually add a path and optionally give it a name                                      |
+| `CdProjectSearchAndAdd` | fuzzy find directories in $HOME using the configured picker and optionally give it a name |
+| `CdProjectDelete`       | pick a project to delete from the database                                             |
+
+## Pickers
+
+Set `projects_picker` to choose how projects are listed:
+
+| Picker      | Requires                                              | Notes                                          |
+| ----------- | ----------------------------------------------------- | ---------------------------------------------- |
+| `telescope` | [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) | default                                        |
+| `snacks`    | [snacks.nvim](https://github.com/folke/snacks.nvim) with `picker` enabled | supports the same keymaps as telescope         |
+| `vim-ui`    | nothing (uses `vim.ui.select`)                        | select-only, no extra keymaps                  |
 
 ## Default Picker Keymaps
+
+> Available in both the `telescope` and `snacks` pickers.
 
 | Map     | Action                               |
 | ------- | ------------------------------------ |

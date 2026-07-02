@@ -10,63 +10,12 @@ local conf = require("telescope.config").values
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 
-local repo = require("cd-project.project-repo")
 local api = require("cd-project.api")
+local common = require("cd-project.adapter.common")
 
 local M = {}
 
-local function format_entry(project, projects)
-  local max_name = 15 -- minimum width
-  local max_path = 20 -- minimum width
-
-  for _, p in ipairs(projects) do
-    max_name = math.max(max_name, #p.name)
-    local path = vim.fn.pathshorten(p.path)
-    max_path = math.max(max_path, #path)
-  end
-
-  -- Apply maximum constraints
-  max_name = math.min(max_name, 30)
-  max_path = math.min(max_path, 40)
-
-  local name = project.name
-  local path = vim.fn.pathshorten(project.path)
-
-  -- Pad or truncate name
-  if #name > max_name then
-    name = name:sub(1, max_name - 2) .. ".."
-  else
-    name = name .. string.rep(" ", max_name - #name)
-  end
-
-  -- Pad or truncate path
-  if #path > max_path then
-    path = path:sub(1, max_path - 2) .. ".."
-  else
-    path = path .. string.rep(" ", max_path - #path)
-  end
-
-  return string.format("%s │ %s", name, path)
-end
-
----@return CdProject.Project[]
-local function get_entries()
-  local projects = repo.get_projects()
-
-  local current_project_path = vim.fn.getcwd()
-  local current_project_index = nil
-  for i, project in ipairs(projects) do
-    if project.path == current_project_path then
-      current_project_index = i
-    end
-  end
-
-  if current_project_index then
-    local current_project = table.remove(projects, current_project_index)
-    table.insert(projects, current_project)
-  end
-  return projects
-end
+local get_entries = common.get_entries
 
 ---@param callback fun(project: CdProject.Project): nil
 ---@param opts? {prompt?: string}
@@ -76,6 +25,7 @@ function M.project_picker(callback, opts)
   local projects = get_entries()
 
   local function start_picker(project_list)
+    local name_width, path_width = common.column_widths(project_list)
     pickers
         .new(opts, {
           prompt_title = opts.prompt or "cd to project",
@@ -83,7 +33,8 @@ function M.project_picker(callback, opts)
             results = project_list,
             ---@param project CdProject.Project
             entry_maker = function(project)
-              local display = format_entry(project, project_list)
+              local name, path = common.format_columns(project, name_width, path_width)
+              local display = string.format("%s │ %s", name, path)
               return {
                 value = project,
                 display = display,

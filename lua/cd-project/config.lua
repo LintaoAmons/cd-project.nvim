@@ -1,4 +1,4 @@
----@alias CdProject.Adapter "telescope"|"vim-ui"
+---@alias CdProject.Adapter "telescope"|"vim-ui"|"snacks"
 ---@alias CdProject.ChoiceFormat "name"|"path"|"both"
 
 ---@class CdProject.Config

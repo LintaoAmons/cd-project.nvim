@@ -5,6 +5,19 @@ All notable changes to the cd-project.nvim plugin will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- New `snacks` picker adapter (`projects_picker = "snacks"`) built on [snacks.nvim](https://github.com/folke/snacks.nvim), with the same keymaps as the Telescope picker: `<cr>` cd, `<c-t>` tab, `<c-e>` window, `<c-d>` delete, `<c-r>` rename (delete/rename refresh the picker in place)
+- `CdProjectSearchAndAdd` and `CdProjectDelete` now respect `projects_picker` instead of always using Telescope
+
+### Changed
+- Extracted shared picker helpers (entry sorting, column formatting) into `cd-project.adapter.common`, used by both the Telescope and snacks adapters
+
+### Fixed
+- `CdProjectBack` no longer errors when there is no previous project to go back to
+- Removed leftover `cd_project_in_tab` in the vim-ui adapter that called a deleted API function and would always error
+
 ## [1.0.0] - 2025-05-20
 
 ### Added

@@ -228,7 +228,7 @@ end
 local function back()
   local last_project = vim.g.cd_project_last_project
   if not last_project then
-    vim.notify("Can't find last project. Haven't switch project yet.")
+    return vim.notify("Can't find last project. Haven't switch project yet.")
   end
   cd_project(last_project)
 end
