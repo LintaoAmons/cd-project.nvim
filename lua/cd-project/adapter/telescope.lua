@@ -17,6 +17,31 @@ local M = {}
 
 local get_entries = common.get_entries
 
+-- Pick a directory inside the project and cd to it
+---@param project CdProject.Project
+function M.dir_picker(project)
+  common.list_dirs(project.path, function(dirs)
+    pickers
+        .new({}, {
+          prompt_title = "cd to dir in " .. project.name,
+          finder = finders.new_table({ results = dirs }),
+          sorter = conf.generic_sorter({}),
+          attach_mappings = function(prompt_bufnr)
+            actions.select_default:replace(function()
+              actions.close(prompt_bufnr)
+              local selected = action_state.get_selected_entry()
+              if selected == nil then
+                return
+              end
+              api.cd_project(project.path .. "/" .. selected.value)
+            end)
+            return true
+          end,
+        })
+        :find()
+  end)
+end
+
 ---@param callback fun(project: CdProject.Project): nil
 ---@param opts? {prompt?: string}
 function M.project_picker(callback, opts)
@@ -92,6 +117,33 @@ function M.project_picker(callback, opts)
               end
               api.cd_project(selected.value.path, { cd_cmd = "lcd" })
             end, { desc = "Open in current window" })
+
+            map({ "i", "n" }, "<c-f>", function()
+              local selected = action_state.get_selected_entry()
+              if selected == nil then
+                return
+              end
+              actions.close(prompt_bufnr)
+              require("telescope.builtin").find_files({ cwd = selected.value.path })
+            end, { desc = "Find files in project" })
+
+            map({ "i", "n" }, "<c-g>", function()
+              local selected = action_state.get_selected_entry()
+              if selected == nil then
+                return
+              end
+              actions.close(prompt_bufnr)
+              require("telescope.builtin").live_grep({ cwd = selected.value.path })
+            end, { desc = "Grep in project" })
+
+            map({ "i", "n" }, "<c-s>", function()
+              local selected = action_state.get_selected_entry()
+              if selected == nil then
+                return
+              end
+              actions.close(prompt_bufnr)
+              M.dir_picker(selected.value)
+            end, { desc = "cd to dir in project" })
 
             map({ "i", "n" }, "<c-d>", function()
               local selected = action_state.get_selected_entry()

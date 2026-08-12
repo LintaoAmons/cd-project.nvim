@@ -111,6 +111,9 @@ Set `projects_picker` to choose how projects are listed:
 | `<c-e>` | `lcd` into project (open in window)  |
 | `<c-d>` | Delete project                       |
 | `<c-r>` | Rename project                       |
+| `<c-f>` | Find files in the project (without cd) |
+| `<c-g>` | Grep content in the project (without cd) |
+| `<c-s>` | Pick a dir inside the project and `cd` to it |
 
 ## CONTRIBUTING
 

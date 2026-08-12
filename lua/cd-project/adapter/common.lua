@@ -21,6 +21,39 @@ function M.prompt_name_and_add(dir)
   end)
 end
 
+-- List directories under `root` (async) and call `on_dirs` with
+-- root-relative paths, sorted alphabetically.
+---@param root string
+---@param on_dirs fun(dirs: string[])
+function M.list_dirs(root, on_dirs)
+  local cmd
+  if vim.fn.executable("fd") == 1 then
+    cmd = { "fd", "--type", "d", "--hidden", "--exclude", ".git", "--color", "never" }
+  elseif vim.fn.executable("fdfind") == 1 then
+    cmd = { "fdfind", "--type", "d", "--hidden", "--exclude", ".git", "--color", "never" }
+  elseif vim.fn.executable("find") == 1 then
+    cmd = { "find", ".", "-type", "d", "-not", "-path", "*/.git*" }
+  else
+    return utils.log_error("You need to install fd or find.")
+  end
+
+  vim.fn.jobstart(cmd, {
+    cwd = root,
+    stdout_buffered = true,
+    on_stdout = function(_, data)
+      local dirs = {}
+      for _, line in ipairs(data) do
+        line = utils.remove_trailing_slash((line:gsub("^%./", "")))
+        if line ~= "" and line ~= "." then
+          table.insert(dirs, line)
+        end
+      end
+      table.sort(dirs)
+      on_dirs(dirs)
+    end,
+  })
+end
+
 -- Projects sorted by the repo (last visited first), with the current
 -- project moved to the end of the list.
 ---@return CdProject.Project[]

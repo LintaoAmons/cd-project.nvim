@@ -10,6 +10,37 @@ local common = require("cd-project.adapter.common")
 
 local M = {}
 
+-- Pick a directory inside the project and cd to it
+---@param project CdProject.Project
+function M.dir_picker(project)
+  common.list_dirs(project.path, function(dirs)
+    local items = {}
+    for i, dir in ipairs(dirs) do
+      table.insert(items, {
+        idx = i,
+        text = dir,
+        file = project.path .. "/" .. dir,
+        dir = true,
+      })
+    end
+    Snacks.picker.pick({
+      source = "cd_project_dirs",
+      title = "cd to dir in " .. project.name,
+      finder = function()
+        return items
+      end,
+      format = "text",
+      confirm = function(picker, item)
+        picker:close()
+        if item == nil then
+          return
+        end
+        api.cd_project(item.file)
+      end,
+    })
+  end)
+end
+
 ---@param callback fun(project: CdProject.Project): nil
 ---@param opts? {prompt?: string}
 function M.project_picker(callback, opts)
@@ -74,6 +105,27 @@ function M.project_picker(callback, opts)
         api.delete_project(item.project)
         picker:find({ refresh = true })
       end,
+      search_files = function(picker, item)
+        if item == nil then
+          return
+        end
+        picker:close()
+        Snacks.picker.files({ cwd = item.project.path })
+      end,
+      grep_content = function(picker, item)
+        if item == nil then
+          return
+        end
+        picker:close()
+        Snacks.picker.grep({ cwd = item.project.path })
+      end,
+      search_dirs = function(picker, item)
+        if item == nil then
+          return
+        end
+        picker:close()
+        M.dir_picker(item.project)
+      end,
       rename_project = function(picker, item)
         if item == nil then
           return
@@ -96,6 +148,9 @@ function M.project_picker(callback, opts)
           ["<c-e>"] = { "cd_project_window", mode = { "i", "n" }, desc = "Open in current window" },
           ["<c-d>"] = { "delete_project", mode = { "i", "n" }, desc = "Delete project" },
           ["<c-r>"] = { "rename_project", mode = { "i", "n" }, desc = "Rename project" },
+          ["<c-f>"] = { "search_files", mode = { "i", "n" }, desc = "Find files in project" },
+          ["<c-g>"] = { "grep_content", mode = { "i", "n" }, desc = "Grep in project" },
+          ["<c-s>"] = { "search_dirs", mode = { "i", "n" }, desc = "cd to dir in project" },
         },
       },
       list = {
@@ -104,6 +159,9 @@ function M.project_picker(callback, opts)
           ["<c-e>"] = "cd_project_window",
           ["<c-d>"] = "delete_project",
           ["<c-r>"] = "rename_project",
+          ["<c-f>"] = "search_files",
+          ["<c-g>"] = "grep_content",
+          ["<c-s>"] = "search_dirs",
         },
       },
     },
