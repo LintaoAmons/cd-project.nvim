@@ -7,7 +7,7 @@ local position = require("cd-project.position")
 local function find_project_dir()
   local found = vim.fs.find(
     vim.g.cd_project_config.project_dir_pattern,
-    { upward = true, stop = vim.loop.os_homedir(), path = vim.fs.dirname(vim.fn.expand("%:p")) }
+    { upward = true, stop = vim.loop.os_homedir(), path = vim.fn.getcwd() }
   )
 
   if #found == 0 then
