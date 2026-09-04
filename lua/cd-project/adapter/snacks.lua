@@ -10,6 +10,17 @@ local common = require("cd-project.adapter.common")
 
 local M = {}
 
+-- Search inside `project` without changing the working directory: the project
+-- path goes to the picker as `cwd`, no cd of any kind happens.
+---@param project CdProject.Project
+---@param kind CdProject.SearchKind
+function M.search(project, kind)
+  if kind == "grep" then
+    return Snacks.picker.grep({ cwd = project.path })
+  end
+  Snacks.picker.files({ cwd = project.path })
+end
+
 -- Pick a directory inside the project and cd to it
 ---@param project CdProject.Project
 function M.dir_picker(project)
@@ -110,14 +121,14 @@ function M.project_picker(callback, opts)
           return
         end
         picker:close()
-        Snacks.picker.files({ cwd = item.project.path })
+        M.search(item.project, "files")
       end,
       grep_content = function(picker, item)
         if item == nil then
           return
         end
         picker:close()
-        Snacks.picker.grep({ cwd = item.project.path })
+        M.search(item.project, "grep")
       end,
       search_dirs = function(picker, item)
         if item == nil then

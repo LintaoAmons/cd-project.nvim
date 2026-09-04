@@ -334,6 +334,62 @@ local function scan_projects(opts)
   end)
 end
 
+-- Search inside a project that we are NOT cd'd to.
+--
+-- The whole point of this is that the working directory does not move: the
+-- project path is handed to the picker as its `cwd` argument and nothing here
+-- calls `cd_project`. Because we never leave, there is no "cd back" step and no
+-- way to strand the user in someone else's directory when a search fails.
+---@param project CdProject.Project
+---@param kind? CdProject.SearchKind
+local function search_in_project(project, kind)
+  if vim.fn.isdirectory(project.path) == 0 then
+    return utils.log_error(
+      "Project '"
+        .. project.name
+        .. "' path no longer exists: "
+        .. project.path
+        .. " -- moved or renamed? Try :CdProjectPrune"
+    )
+  end
+  require("cd-project.adapter").search(project, kind or "files")
+end
+
+-- Search in a project by name, without cd'ing to it.
+--
+-- Projects are addressed by *name*, matching `cd_project_by_name` and
+-- `:CdProject <name>`, so a project that moves on disk only needs its entry in
+-- the json updated -- user keymaps keep working. Addressing by path would push
+-- that edit into everyone's config.
+--
+-- `project` is optional on purpose. Given, it is a one-key jump into a fixed
+-- project; omitted, the project picker asks which one first. Both readings of
+-- "search in a specific project" share this one call shape, so supporting the
+-- pick-first flow needs no second config format.
+---@param opts? {project?: string, kind?: CdProject.SearchKind}
+local function search_project(opts)
+  opts = opts or {}
+  local kind = opts.kind or "files"
+
+  if not opts.project then
+    return require("cd-project.adapter").search_with_picker(kind)
+  end
+
+  -- `all = true` on purpose: the default view drops projects whose directory is
+  -- missing, which would report a renamed project as an unknown name. Looking at
+  -- every entry keeps "you named a project that does not exist" and "this
+  -- project's directory is gone" as two distinct, separately actionable errors.
+  for _, project in ipairs(repo.get_projects({ all = true })) do
+    if project.name == opts.project then
+      return search_in_project(project, kind)
+    end
+  end
+
+  utils.log_error(
+    "No project found with name: '" .. opts.project .. "'. Run :CdProject to see available names."
+  )
+end
+
 local function back()
   local last_project = vim.g.cd_project_last_project
   if not last_project then
@@ -354,6 +410,8 @@ return {
   delete_project = delete_project,
   prune_projects = prune_projects,
   scan_projects = scan_projects,
+  search_project = search_project,
+  search_in_project = search_in_project,
   back = back,
   find_project_dir = find_project_dir,
 }

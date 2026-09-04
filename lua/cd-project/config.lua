@@ -1,5 +1,8 @@
 ---@alias CdProject.Adapter "telescope"|"vim-ui"|"snacks"
 ---@alias CdProject.ChoiceFormat "name"|"path"|"both"
+-- What `search_project` looks for inside a project. An enum string rather than a
+-- boolean pair so a third mode can be added later without touching existing calls.
+---@alias CdProject.SearchKind "files"|"grep"
 
 ---@class CdProject.Config
 ---@field projects_config_filepath string

@@ -83,12 +83,61 @@ return {
 | `CdProjectDelete`       | pick a project to delete from the database                                             |
 | `CdProjectPrune[!]`     | remove projects whose directory no longer exists (`!` skips the confirmation)          |
 | `CdProjectScan [dir]`   | add every git repo found under `dir` (default: cwd) to the database                    |
+| `CdProjectSearch [name]`| find files in a project **without** `cd`ing to it; no name picks a project first       |
+| `CdProjectGrep [name]`  | grep in a project **without** `cd`ing to it; no name picks a project first             |
 
 Since `CdProject` takes a name, you can map keys to your most used projects:
 
 ```lua
 vim.keymap.set("n", "<leader>pn", "<cmd>CdProject my-notes<cr>")
 ```
+
+## Search in a project without switching to it
+
+Sometimes you only want to grab a file out of another project, not move into it.
+`CdProjectSearch` / `CdProjectGrep` search a project directly and **leave your
+working directory exactly where it was** - the project path is handed to the
+picker as its `cwd`, nothing is `cd`ed, so there is no "switch back" step to
+forget and no way to get stranded in another project's directory.
+
+Bind a key straight to the project you care about:
+
+```lua
+-- using lazy.nvim
+return {
+  "LintaoAmons/cd-project.nvim",
+  keys = {
+    -- one key -> find files in "my-notes", wherever you currently are
+    { "<leader>sn", function()
+        require("cd-project").api.search_project({ project = "my-notes", kind = "files" })
+      end, desc = "Find files in my-notes" },
+
+    -- one key -> grep "my-notes", wherever you currently are
+    { "<leader>sN", function()
+        require("cd-project").api.search_project({ project = "my-notes", kind = "grep" })
+      end, desc = "Grep in my-notes" },
+
+    -- leave `project` out and you get asked which project first
+    { "<leader>sp", function()
+        require("cd-project").api.search_project({ kind = "grep" })
+      end, desc = "Grep in a project" },
+  },
+}
+```
+
+`search_project` takes:
+
+| Field     | Values              | Meaning                                                          |
+| --------- | ------------------- | ---------------------------------------------------------------- |
+| `project` | a project name      | search this project directly. Omit it to pick a project first     |
+| `kind`    | `"files"` \| `"grep"` | find files by name, or grep their contents. Defaults to `"files"` |
+
+Projects are addressed by **name** (the same names `:CdProject <name>` completes),
+not by path, so moving a project on disk only means updating its entry in the
+json - your keymaps keep working.
+
+Requires `projects_picker` to be `telescope` or `snacks`; `vim-ui` has no search
+backend.
 
 ## Pickers
 

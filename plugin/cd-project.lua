@@ -24,6 +24,13 @@ local function joined_name(fargs)
   return name
 end
 
+---@param arg_lead string
+local function complete_project_name(arg_lead)
+  return vim.tbl_filter(function(name)
+    return name:lower():find(arg_lead:lower(), 1, true) ~= nil
+  end, api.get_project_names())
+end
+
 vim.api.nvim_create_user_command("CdProject", function(args)
   local name = joined_name(args.fargs)
   if name then
@@ -32,11 +39,7 @@ vim.api.nvim_create_user_command("CdProject", function(args)
   adapter.cd_project()
 end, {
   nargs = "*",
-  complete = function(arg_lead)
-    return vim.tbl_filter(function(name)
-      return name:lower():find(arg_lead:lower(), 1, true) ~= nil
-    end, api.get_project_names())
-  end,
+  complete = complete_project_name,
   desc = "cd to a project by name, or pick one when no name is given",
 })
 vim.api.nvim_create_user_command("CdProjectAdd", function(args)
@@ -51,4 +54,18 @@ end, { bang = true, desc = "Remove projects whose directory no longer exists (! 
 vim.api.nvim_create_user_command("CdProjectScan", function(args)
   api.scan_projects({ dir = joined_name(args.fargs) })
 end, { nargs = "*", complete = "dir", desc = "Add all git repos under the given dir (default: cwd) as projects" })
+vim.api.nvim_create_user_command("CdProjectSearch", function(args)
+  api.search_project({ project = joined_name(args.fargs), kind = "files" })
+end, {
+  nargs = "*",
+  complete = complete_project_name,
+  desc = "Find files in a project without cd'ing to it (no name: pick one first)",
+})
+vim.api.nvim_create_user_command("CdProjectGrep", function(args)
+  api.search_project({ project = joined_name(args.fargs), kind = "grep" })
+end, {
+  nargs = "*",
+  complete = complete_project_name,
+  desc = "Grep in a project without cd'ing to it (no name: pick one first)",
+})
 vim.api.nvim_create_user_command("CdProjectBack", api.back, {})

@@ -17,6 +17,17 @@ local M = {}
 
 local get_entries = common.get_entries
 
+-- Search inside `project` without changing the working directory: the project
+-- path goes to the picker as `cwd`, no cd of any kind happens.
+---@param project CdProject.Project
+---@param kind CdProject.SearchKind
+function M.search(project, kind)
+  if kind == "grep" then
+    return require("telescope.builtin").live_grep({ cwd = project.path })
+  end
+  require("telescope.builtin").find_files({ cwd = project.path })
+end
+
 -- Pick a directory inside the project and cd to it
 ---@param project CdProject.Project
 function M.dir_picker(project)
@@ -124,7 +135,7 @@ function M.project_picker(callback, opts)
                 return
               end
               actions.close(prompt_bufnr)
-              require("telescope.builtin").find_files({ cwd = selected.value.path })
+              M.search(selected.value, "files")
             end, { desc = "Find files in project" })
 
             map({ "i", "n" }, "<c-g>", function()
@@ -133,7 +144,7 @@ function M.project_picker(callback, opts)
                 return
               end
               actions.close(prompt_bufnr)
-              require("telescope.builtin").live_grep({ cwd = selected.value.path })
+              M.search(selected.value, "grep")
             end, { desc = "Grep in project" })
 
             map({ "i", "n" }, "<c-s>", function()
